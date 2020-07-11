@@ -25,7 +25,7 @@ class ForestRun : KtxScreen {
     var velocityIterations = 8
     var positionIterations = 3
     val boidLord = BoidLord(box2dWorld, Vector2(1f, 1f), 0.1f, 10f)
-    val testBird = Bird(50f)
+    val testBird = Bird(100f)
 
     override fun render(delta: Float) {
         box2dWorld.step(timeStep, velocityIterations, positionIterations)
