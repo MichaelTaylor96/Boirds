@@ -24,6 +24,7 @@ class ForestRun : KtxScreen {
     val boidLord = BoidLord(box2dWorld, Vector2(1f, 1f), 0.1f, 10f)
     val testBird = Bird(0.1f, box2dWorld, Vector2(1.5f, 1.5f), Vector2(0.1f, 0.1f), pixelsPerMeter)
     val tree = Tree(Vector2(5f, 1f), 1f, box2dWorld)
+    val wolf = Wolf(Vector2(-5f, -1f), 1f, box2dWorld)
 
     override fun render(delta: Float) {
         box2dWorld.step(timeStep, velocityIterations, positionIterations)
