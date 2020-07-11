@@ -5,8 +5,6 @@ import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.World
 import ktx.box2d.body
 import ktx.box2d.box
-import ktx.box2d.circle
-import ktx.box2d.polygon
 
 class Wolf(position: Vector2, override val size: Float, world: World) : Obstacle {
 
