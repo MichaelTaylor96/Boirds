@@ -2,7 +2,6 @@ package com.taylorbros
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.math.Vector2
@@ -28,7 +27,8 @@ class ForestRun : KtxScreen {
     val tree = Tree(Vector2(5f, 1f), 1f, box2dWorld)
     val wolf = Wolf(Vector2(-5f, -1f), 1f, box2dWorld)
     val flame = Flame(Vector2(1f, -5f), 1f, box2dWorld)
-    val lumberjack = LumberJack(Vector2(-1f, 5f), 1f, box2dWorld)
+    val lumberJack = LumberJack(Vector2(-1f, 5f), 1f, box2dWorld)
+    val seedPile = SeedPile(Vector2(-5f, - 5f), 1f, box2dWorld)
 
     override fun render(delta: Float) {
         box2dWorld.step(timeStep, velocityIterations, positionIterations)
