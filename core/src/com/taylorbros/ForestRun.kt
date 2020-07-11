@@ -28,12 +28,13 @@ class ForestRun : KtxScreen {
     val tree = Tree(Vector2(5f, 1f), 1f, box2dWorld)
     val wolf = Wolf(Vector2(-5f, -1f), 1f, box2dWorld, pixelsPerMeter, 2f)
     val flame = Flame(Vector2(1f, -5f), 1f, box2dWorld)
-    val lumberJack = LumberJack(Vector2(-1f, 5f), 1f, box2dWorld)
+    val lumberJack = LumberJack(Vector2(-1f, 5f), 1f, box2dWorld, pixelsPerMeter, 3f)
     val seedPile = SeedPile(Vector2(-5f, - 5f), 1f, box2dWorld)
 
     init {
         animatables.add(testBird)
         animatables.add(wolf)
+        animatables.add(lumberJack)
     }
 
     override fun render(delta: Float) {
