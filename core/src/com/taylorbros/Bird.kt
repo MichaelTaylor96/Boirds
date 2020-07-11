@@ -21,16 +21,17 @@ class Bird(
 
     override val animations: MutableMap<String, Animation<TextureRegion>> = mutableMapOf()
     override var currentAnimation = ""
+    override var loop = true
     override var elapsedTime = 0f
-    override val spriteWidth = size * pixelsPerMeter
-    override val spriteHeight = size * pixelsPerMeter
+    override val spriteWidth = size * pixelsPerMeter * 50
+    override val spriteHeight = size * pixelsPerMeter * 50
 
     init {
         var animNames = listOf("alert")
-        var fileNames = listOf("wolfEat.png")
+        var fileNames = listOf("whirlwind.png")
         for ((index, name) in animNames.withIndex()) {
-            var img = Texture("sprites/wolf/${fileNames[index]}")
-            var tmpFrames = TextureRegion.split(img, 32, 32)
+            var img = Texture("sprites/${fileNames[index]}")
+            var tmpFrames = TextureRegion.split(img, 16, 19)
             var animationFrames = Array<TextureRegion>(tmpFrames[0])
             var animation = Animation<TextureRegion>(0.125f, animationFrames)
             animations[name] = animation
