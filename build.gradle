@@ -62,5 +62,6 @@ project(":core") {
         api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
         api "io.github.libktx:ktx-app:$ktxVersion"
         api "io.github.libktx:ktx-graphics:$ktxVersion"
+        api "io.github.libktx:ktx-box2d:$ktxVersion"
     }
 }
