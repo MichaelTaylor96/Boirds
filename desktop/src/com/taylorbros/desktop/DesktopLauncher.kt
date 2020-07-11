@@ -8,6 +8,9 @@ object DesktopLauncher {
     @JvmStatic
     fun main(arg: Array<String>) {
         val config = LwjglApplicationConfiguration()
+        config.title = "Boirds"
+        config.width = 1600
+        config.height = 900
         LwjglApplication(BoirdMain(), config)
     }
 }
