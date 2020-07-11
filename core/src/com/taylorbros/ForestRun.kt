@@ -25,7 +25,7 @@ class ForestRun : KtxScreen {
     var velocityIterations = 8
     var positionIterations = 3
     val boidLord = BoidLord(box2dWorld, Vector2(1f, 1f), 0.1f, 10f)
-    val testBird = Bird(50f)
+    val testBird = Bird(0.1f, box2dWorld, Vector2(1.5f, 1.5f), Vector2(0.1f, 0.1f), pixelsPerMeter)
 
     override fun render(delta: Float) {
         box2dWorld.step(timeStep, velocityIterations, positionIterations)
@@ -38,7 +38,7 @@ class ForestRun : KtxScreen {
             batch.draw(img, 800f, 450f, testBird.spriteWidth, testBird.spriteHeight)
             Gdx.gl.glClearColor(1f, 1f, 1f, 1f);
         }
-//        debugRenderer!!.render(box2dWorld, camera.combined)
+        debugRenderer!!.render(box2dWorld, camera.combined)
     }
 
     override fun dispose() {
