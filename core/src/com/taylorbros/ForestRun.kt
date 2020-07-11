@@ -2,7 +2,6 @@ package com.taylorbros
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer
@@ -13,9 +12,7 @@ import ktx.graphics.use
 class ForestRun : KtxScreen {
 
     private val box2dWorld = createWorld()
-    private val batch = SpriteBatch().apply {
-//        color = Color.WHITE
-    }
+    private val batch = SpriteBatch()
     private val pixelsPerMeter = 50f
     private var stageWidth = Gdx.graphics.width / pixelsPerMeter
     private var stageHeight = Gdx.graphics.height / pixelsPerMeter
@@ -26,6 +23,7 @@ class ForestRun : KtxScreen {
     var positionIterations = 3
     val boidLord = BoidLord(box2dWorld, Vector2(1f, 1f), 0.1f, 10f)
     val testBird = Bird(0.1f, box2dWorld, Vector2(1.5f, 1.5f), Vector2(0.1f, 0.1f), pixelsPerMeter)
+    val tree = Tree(Vector2(5f, 1f), 1f, box2dWorld)
 
     override fun render(delta: Float) {
         box2dWorld.step(timeStep, velocityIterations, positionIterations)
