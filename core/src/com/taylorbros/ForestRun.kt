@@ -28,6 +28,7 @@ class ForestRun : KtxScreen {
     val tree = Tree(Vector2(5f, 1f), 1f, box2dWorld)
     val wolf = Wolf(Vector2(-5f, -1f), 1f, box2dWorld)
     val flame = Flame(Vector2(1f, -5f), 1f, box2dWorld)
+    val lumberjack = LumberJack(Vector2(-1f, 5f), 1f, box2dWorld)
 
     override fun render(delta: Float) {
         box2dWorld.step(timeStep, velocityIterations, positionIterations)
