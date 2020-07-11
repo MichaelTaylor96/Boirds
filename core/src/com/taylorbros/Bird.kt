@@ -16,22 +16,21 @@ class Bird(
         world: World,
         initialPosition: Vector2,
         initialVelocity: Vector2,
-        pixelsPerMeter: Float
-    ) : Animatable, Boid {
+        override val pixelsPerMeter: Float,
+        override val scaleFactor: Float
+) : Animatable, Boid {
 
     override val animations: MutableMap<String, Animation<TextureRegion>> = mutableMapOf()
     override var currentAnimation = ""
     override var loop = true
     override var elapsedTime = 0f
-    override val spriteWidth = size * pixelsPerMeter * 50
-    override val spriteHeight = size * pixelsPerMeter * 50
 
     init {
-        var animNames = listOf("alert")
-        var fileNames = listOf("whirlwind.png")
+        var animNames = listOf("up", "down", "left", "right", "eat")
+        var fileNames = listOf("birdUp.png", "birdDown.png", "birdLeft.png", "birdRight.png", "birdEat.png")
         for ((index, name) in animNames.withIndex()) {
-            var img = Texture("sprites/${fileNames[index]}")
-            var tmpFrames = TextureRegion.split(img, 16, 19)
+            var img = Texture("sprites/bird/${fileNames[index]}")
+            var tmpFrames = TextureRegion.split(img, 16, 15)
             var animationFrames = Array<TextureRegion>(tmpFrames[0])
             var animation = Animation<TextureRegion>(0.125f, animationFrames)
             animations[name] = animation
