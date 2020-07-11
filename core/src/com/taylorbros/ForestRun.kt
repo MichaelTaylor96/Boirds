@@ -14,7 +14,7 @@ class ForestRun : KtxScreen {
 
     private val box2dWorld = createWorld()
     private val batch = SpriteBatch().apply {
-//        color = Color.BLACK
+//        color = Color.WHITE
     }
     private val pixelsPerMeter = 50f
     private var stageWidth = Gdx.graphics.width / pixelsPerMeter
@@ -31,8 +31,12 @@ class ForestRun : KtxScreen {
         box2dWorld.step(timeStep, velocityIterations, positionIterations)
         batch.use {
             testBird.elapsedTime += delta
+            if (Math.random() > 0.99) {
+                testBird.currentAnimation = testBird.animations.keys.toList().shuffled()[0]
+            }
             val img = testBird.getKeyFrame()
             batch.draw(img, 800f, 450f, testBird.spriteWidth, testBird.spriteHeight)
+            Gdx.gl.glClearColor(1f, 1f, 1f, 1f);
         }
 //        debugRenderer!!.render(box2dWorld, camera.combined)
     }
