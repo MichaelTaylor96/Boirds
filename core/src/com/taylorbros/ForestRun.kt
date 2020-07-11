@@ -29,6 +29,7 @@ class ForestRun : KtxScreen {
     val flame = Flame(Vector2(1f, -5f), 1f, box2dWorld)
     val lumberJack = LumberJack(Vector2(-1f, 5f), 1f, box2dWorld)
     val seedPile = SeedPile(Vector2(-5f, - 5f), 1f, box2dWorld)
+    val tornado = Tornado(Vector2(5f,  5f), 1f, box2dWorld)
 
     override fun render(delta: Float) {
         box2dWorld.step(timeStep, velocityIterations, positionIterations)
