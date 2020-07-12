@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer
@@ -25,14 +27,16 @@ class ForestRun : KtxScreen {
     private var timeStep = 1.0f / 60.0f
     private var velocityIterations = 8
     private var positionIterations = 3
+    private var background = Texture("tiles/singleGrass.png")
+    private var bgRegion = TextureRegion()
 
     private val boidCount = 50
     private val maxSpeed = 10f
     private val maxAcceleration = 10f
     private val localDistance = 1.5f
     private val flockingPower = 10f
-    private val entities = mutableSetOf<Any>()
 
+    private val entities = mutableSetOf<Any>()
     private val collisionManager = CollisionManager(entities)
 
     init {
@@ -67,6 +71,9 @@ class ForestRun : KtxScreen {
 
         Gdx.app.input.inputProcessor = boidLord
         box2dWorld.setContactListener(collisionManager)
+        background.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat)
+        bgRegion.texture = background
+        bgRegion.setRegion(0f, 0f, (stageWidth * pixelsPerMeter) + 16, (stageHeight * pixelsPerMeter) + 16)
 
         var treeY = -(stageHeight/2)
         while(treeY < (stageHeight/2) + 3) {
@@ -128,6 +135,9 @@ class ForestRun : KtxScreen {
         batch.use {
             Gdx.gl.glClearColor(1f, 1f,1f, 1f)
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+            val bgOffset = (yOffsetCurrent*pixelsPerMeter)%16
+            batch.draw(bgRegion, 0f, 0f - bgOffset)
+
             for (animatable in entities.filterIsInstance<Animatable>()) {
                 animatable.elapsedTime += delta
                 val img = animatable.getKeyFrame()
@@ -137,7 +147,7 @@ class ForestRun : KtxScreen {
                 batch.draw(sprite.sprite, sprite.pixelX, sprite.pixelY - pixelOffset, sprite.pixelWidth, sprite.pixelHeight)
             }
         }
-        debugRenderer.render(box2dWorld, camera.combined)
+//        debugRenderer.render(box2dWorld, camera.combined)
     }
 
     fun addSideTrees() {
