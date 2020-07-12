@@ -99,7 +99,6 @@ class Wolf(
 
     private fun seekingForce(target: Boid): Vector2 {
         val vectorToTarget = target.position.cpy().sub(position)
-
         val distance = vectorToTarget.len()
         val proximity = awareness / distance
         return vectorToTarget.setLength(proximity)

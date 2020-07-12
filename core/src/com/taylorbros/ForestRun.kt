@@ -51,7 +51,7 @@ class ForestRun : KtxScreen {
     )
     private val wolf = Wolf(Vector2(-5f, -1f), .5f, box2dWorld, pixelsPerMeter, 2f)
     private val lumberJack = LumberJack(Vector2(-1f, 5f), 1f, box2dWorld, pixelsPerMeter, 2.5f)
-    private val seedPile = SeedPile(Vector2(-5f, - 5f), 1f, box2dWorld, pixelsPerMeter, 2f)
+    private val seedPile = SeedPile(Vector2(-5f, 7f), 1f, box2dWorld, pixelsPerMeter, 2f)
 
     init {
         animatables.add(wolf)
@@ -63,6 +63,7 @@ class ForestRun : KtxScreen {
         entities.add(boidLord)
         entities.add(wolf)
         entities.add(lumberJack)
+        entities.add(seedPile)
 
         Gdx.app.input.inputProcessor = boidLord
         box2dWorld.setContactListener(collisionManager)

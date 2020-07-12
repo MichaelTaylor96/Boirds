@@ -20,6 +20,11 @@ class CollisionManager : ContactListener {
             val bird = bodies.find{it.userData is Bird}!!.userData as Bird
             handleWolfEat(wolf, bird)
         }
+        else if (bodies.any{it.userData is Bird} && bodies.any{it.userData is SeedPile}) {
+            val seedPile = bodies.find{it.userData is Wolf}!!.userData as SeedPile
+            val bird = bodies.find{it.userData is Bird}!!.userData as Bird
+            handleBirdEat(bird, seedPile)
+        }
     }
 
     private fun handleWolfEat(wolf: Wolf, bird: Bird) {
@@ -27,6 +32,13 @@ class CollisionManager : ContactListener {
         wolf.currentAnimation = "eat"
         wolf.timeStartedEating = wolf.elapsedTime
         wolf.body.setLinearVelocity(0f, 0f)
+    }
+
+    private fun handleBirdEat(bird: Bird, seed: SeedPile) {
+        bird.eating = true
+        bird.currentAnimation = "eat"
+        bird.timeStartedEating = bird.elapsedTime
+        bird.body.setLinearVelocity(0f, 0f)
     }
 
     override fun preSolve(contact: Contact?, oldManifold: Manifold?) {
