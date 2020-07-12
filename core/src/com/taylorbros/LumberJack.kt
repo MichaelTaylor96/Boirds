@@ -15,10 +15,10 @@ import ktx.box2d.polygon
 class LumberJack(
         position: Vector2,
         override val size: Float,
-        world: World,
+        private val world: World,
         override val pixelsPerMeter: Float,
         override val scaleFactor: Float
-        ) : Obstacle, Animatable, Lethal {
+        ) : Obstacle, Animatable, Lethal, Destroyable {
 
     override val animations: MutableMap<String, Animation<TextureRegion>> = mutableMapOf()
     override var currentAnimation = ""
@@ -57,4 +57,13 @@ class LumberJack(
 
     override val position: Vector2
         get() = this.body.position
+
+    var dead = false
+
+    override fun die() {
+        if (!dead) {
+            dead = true
+            world.destroyBody(this.body)
+        }
+    }
 }
