@@ -6,15 +6,25 @@ import com.badlogic.gdx.physics.box2d.ContactListener
 import com.badlogic.gdx.physics.box2d.Manifold
 
 
-class CollisionManager : ContactListener {
+class CollisionManager(private val entities: MutableSet<Any>) : ContactListener {
+
+    private val entitiesToDestroy = mutableListOf<Mortal>()
+
+    fun destroyEntities() {
+        entitiesToDestroy.forEach {
+            it.die()
+            if (entities.contains(it)) {
+                entities.remove(it)
+            }
+        }
+    }
+
     override fun endContact(contact: Contact?) {}
 
     override fun beginContact(contact: Contact?) {
         val bodyA = contact!!.fixtureA.body
         val bodyB = contact!!.fixtureB.body
         val bodies = listOf(bodyA, bodyB)
-        val entityA = bodyA.userData
-        val entityB = bodyB.userData
 
         if (bodies.any{it.userData is Bird} && bodies.any{it.userData is Wolf}) {
             val wolf = bodies.find{it.userData is Wolf}!!.userData as Wolf
@@ -24,7 +34,7 @@ class CollisionManager : ContactListener {
 
         if (bodies.any{it.userData is Mortal} && bodies.any{it.userData is Lethal}) {
             val mortal = bodies.find{it.userData is Mortal}!!.userData as Mortal
-            mortal.die()
+            entitiesToDestroy.add(mortal)
         }
     }
 
@@ -36,10 +46,8 @@ class CollisionManager : ContactListener {
     }
 
     override fun preSolve(contact: Contact?, oldManifold: Manifold?) {
-//        TODO("Not yet implemented")
     }
 
     override fun postSolve(contact: Contact?, impulse: ContactImpulse?) {
-//        TODO("Not yet implemented")
     }
 }

@@ -16,7 +16,7 @@ import kotlin.math.pow
 
 class Bird(
         override val size: Float,
-        world: World,
+        private val world: World,
         initialPosition: Vector2,
         initialVelocity: Vector2,
         override val pixelsPerMeter: Float,
@@ -235,7 +235,13 @@ class Bird(
     override val velocity: Vector2
         get() = this.body.linearVelocity
 
+    var dead = false
+
     override fun die() {
-        println("$this died")
+        if (!dead) {
+            dead = true
+            println("$this died")
+            world.destroyBody(this.body)
+        }
     }
 }
