@@ -33,8 +33,14 @@ class CollisionManager(private val entities: MutableSet<Any>) : ContactListener 
         }
 
         if (bodies.any{it.userData is Mortal} && bodies.any{it.userData is Lethal}) {
-            val mortal = bodies.find{it.userData is Mortal}!!.userData as Mortal
+            val mortal = bodies.find { it.userData is Mortal }!!.userData as Mortal
             entitiesToDestroy.add(mortal)
+        }
+
+        if (bodies.any{it.userData is Bird} && bodies.any{it.userData is SeedPile}) {
+            val seedPile = bodies.find{it.userData is SeedPile}!!.userData as SeedPile
+            val bird = bodies.find{it.userData is Bird}!!.userData as Bird
+            handleBirdEat(bird, seedPile)
         }
     }
 
@@ -43,6 +49,13 @@ class CollisionManager(private val entities: MutableSet<Any>) : ContactListener 
         wolf.currentAnimation = "eat"
         wolf.timeStartedEating = wolf.elapsedTime
         wolf.body.setLinearVelocity(0f, 0f)
+    }
+
+    private fun handleBirdEat(bird: Bird, seed: SeedPile) {
+        bird.eating = true
+        bird.currentAnimation = "eat"
+        bird.timeStartedEating = bird.elapsedTime
+        bird.body.setLinearVelocity(0f, 0f)
     }
 
     override fun preSolve(contact: Contact?, oldManifold: Manifold?) {

@@ -32,6 +32,7 @@ class ForestRun : KtxScreen {
     private val localDistance = 1.5f
     private val flockingPower = 10f
     private val entities = mutableSetOf<Any>()
+
     private val collisionManager = CollisionManager(entities)
 
     init {
@@ -61,11 +62,20 @@ class ForestRun : KtxScreen {
                 LumberJack(Vector2(-1f, 5f), 1f, box2dWorld, pixelsPerMeter, 2.5f)
         )
         entities.add(
-                SeedPile(Vector2(-5f, - 5f), 1f, box2dWorld, pixelsPerMeter, 2f)
+                SeedPile(Vector2(-5f, 7f), 1f, box2dWorld, pixelsPerMeter, 2f)
         )
 
         Gdx.app.input.inputProcessor = boidLord
         box2dWorld.setContactListener(collisionManager)
+
+        var treeY = -(stageHeight/2)
+        while(treeY < (stageHeight/2) + 3) {
+            val leftTree = Tree(Vector2(-(stageWidth/2), treeY), 1f, box2dWorld, pixelsPerMeter, 2.5f)
+            val rightTree = Tree(Vector2(stageWidth/2, treeY), 1f, box2dWorld, pixelsPerMeter, 2.5f)
+            entities.add(leftTree)
+            entities.add(rightTree)
+            treeY += 2f
+        }
 
         repeat(boidCount) {
             val randomOffset = Vector2(((Math.random() * 5) - 2.5).toFloat(), ((Math.random() * 5) - 2.5).toFloat())
@@ -106,6 +116,9 @@ class ForestRun : KtxScreen {
     override fun render(delta: Float) {
         yOffsetCurrent += yOffsetStep
         entities.filterIsInstance<Offsettable>().forEach { it.yOffsetCurrent = yOffsetCurrent }
+        if ((yOffsetCurrent + 1) % 2 < 0.01f) {
+            addSideTrees()
+        }
         val pixelOffset = yOffsetCurrent * pixelsPerMeter
         camera.translate(0f, yOffsetStep)
         camera.update()
@@ -125,6 +138,13 @@ class ForestRun : KtxScreen {
             }
         }
         debugRenderer.render(box2dWorld, camera.combined)
+    }
+
+    fun addSideTrees() {
+        val leftTree = Tree(Vector2(-(stageWidth/2), stageHeight/2 + yOffsetCurrent + 1), 1f, box2dWorld, pixelsPerMeter, 2.5f)
+        val rightTree = Tree(Vector2(stageWidth/2, stageHeight/2 + yOffsetCurrent + 1), 1f, box2dWorld, pixelsPerMeter, 2.5f)
+        entities.add(leftTree)
+        entities.add(rightTree)
     }
 
     override fun dispose() {

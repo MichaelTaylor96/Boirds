@@ -16,6 +16,7 @@ class SeedPile(
         override val scaleFactor: Float
 ) : HasPosition, HasSize, HasStaticSprite {
         override val sprite = Texture("sprites/seed.png")
+        var timesBeenEaten = 0
 
         private val body = world.body {
             type = BodyDef.BodyType.StaticBody
