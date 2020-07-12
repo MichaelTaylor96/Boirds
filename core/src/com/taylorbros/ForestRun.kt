@@ -77,14 +77,14 @@ class ForestRun : KtxScreen {
         bgRegion.texture = background
         bgRegion.setRegion(0f, 0f, (stageWidth * pixelsPerMeter) + 16, (stageHeight * pixelsPerMeter) + 16)
 
-//        var treeY = -(stageHeight/2)
-//        while(treeY < (stageHeight/2) + 3) {
-//            val leftTree = Tree(Vector2(-(stageWidth/2), treeY), 1f, box2dWorld, pixelsPerMeter, 2.5f)
-//            val rightTree = Tree(Vector2(stageWidth/2, treeY), 1f, box2dWorld, pixelsPerMeter, 2.5f)
-//            entities.add(leftTree)
-//            entities.add(rightTree)
-//            treeY += 2f
-//        }
+        var treeY = -(stageHeight/2)
+        while(treeY < (stageHeight/2 + 3)) {
+            val leftTree = Tree(Vector2(-(stageWidth/2), treeY), 1f, box2dWorld, pixelsPerMeter, 2.5f)
+            val rightTree = Tree(Vector2(stageWidth/2, treeY), 1f, box2dWorld, pixelsPerMeter, 2.5f)
+            entities.add(leftTree)
+            entities.add(rightTree)
+            treeY += 2f
+        }
 
         repeat(boidCount) {
             val randomOffset = Vector2(((Math.random() * 5) - 2.5).toFloat(), ((Math.random() * 5) - 2.5).toFloat())
@@ -126,8 +126,8 @@ class ForestRun : KtxScreen {
         yOffsetCurrent += yOffsetStep
         conditionallyAddEntities()
         entities.filterIsInstance<Offsettable>().forEach { it.yOffsetCurrent = yOffsetCurrent }
-        if ((yOffsetCurrent + 1) % 2 < 0.01f) {
-//            addSideTrees()
+        if ((yOffsetCurrent) % 2 < 0.01f) {
+            addSideTrees()
         }
         val pixelOffset = yOffsetCurrent * pixelsPerMeter
         camera.translate(0f, yOffsetStep)
@@ -165,7 +165,7 @@ class ForestRun : KtxScreen {
                             pixelsPerMeter,
                             2f))
         }
-        val targetTrees = min((yOffsetCurrent*4).toInt(), 40)
+        val targetTrees = min((yOffsetCurrent).toInt() + 20, 50)
         if (entities.count { it is Tree } < targetTrees) {
             entities.add(
                     Tree(
@@ -197,12 +197,12 @@ class ForestRun : KtxScreen {
         }
     }
 
-//    fun addSideTrees() {
-//        val leftTree = Tree(Vector2(-(stageWidth/2), stageHeight/2 + yOffsetCurrent + 1), 1f, box2dWorld, pixelsPerMeter, 2.5f)
-//        val rightTree = Tree(Vector2(stageWidth/2, stageHeight/2 + yOffsetCurrent + 1), 1f, box2dWorld, pixelsPerMeter, 2.5f)
-//        entities.add(leftTree)
-//        entities.add(rightTree)
-//    }
+    fun addSideTrees() {
+        val leftTree = Tree(Vector2(-(stageWidth/2), stageHeight/2 + yOffsetCurrent + 1), 1f, box2dWorld, pixelsPerMeter, 2.5f)
+        val rightTree = Tree(Vector2(stageWidth/2, stageHeight/2 + yOffsetCurrent + 1), 1f, box2dWorld, pixelsPerMeter, 2.5f)
+        entities.add(leftTree)
+        entities.add(rightTree)
+    }
 
     override fun dispose() {
         batch.dispose()
