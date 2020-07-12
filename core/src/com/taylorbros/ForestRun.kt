@@ -92,7 +92,7 @@ class ForestRun : KtxScreen {
             val variableFlockingPower = (MathUtils.random() * flockingPower * 2 + 0.5 * flockingPower).toFloat()
             val variableMaxSpeed = (MathUtils.random() * maxSpeed * 2 + 0.5 * maxSpeed).toFloat()
             val variableMaxAcceleration = (MathUtils.random() * maxAcceleration * 0.9 + 0.1 * maxAcceleration).toFloat()
-            val initialImpulse = Vector2().setToRandomDirection().setLength(MathUtils.random() * variableMaxSpeed)
+            val initialImpulse = Vector2(0f, 0f)
             val newBird = Bird(
                     0.1f,
                     box2dWorld,
@@ -134,6 +134,7 @@ class ForestRun : KtxScreen {
         camera.update()
         box2dWorld.step(timeStep, velocityIterations, positionIterations)
         collisionManager.destroyEntities()
+        collisionManager.createEntities()
         entities.forEach { if (it is Updatable) it.update(entities) }
         batch.use {
             Gdx.gl.glClearColor(1f, 1f,1f, 1f)
@@ -165,16 +166,16 @@ class ForestRun : KtxScreen {
                             pixelsPerMeter,
                             2f))
         }
-        val targetTrees = min((yOffsetCurrent*4).toInt(), 40)
-        if (entities.count { it is Tree } < targetTrees) {
-            entities.add(
-                    Tree(
-                            Vector2((Math.random()).toFloat()* stageWidth - stageWidth/2, stageHeight*2/3 + yOffsetCurrent),
-                            Math.random().toFloat() + 0.5f,
-                            box2dWorld,
-                            pixelsPerMeter,
-                            2f))
-        }
+//        val targetTrees = min((yOffsetCurrent*4).toInt(), 40)
+//        if (entities.count { it is Tree } < targetTrees) {
+//            entities.add(
+//                    Tree(
+//                            Vector2((Math.random()).toFloat()* stageWidth - stageWidth/2, stageHeight*2/3 + yOffsetCurrent),
+//                            Math.random().toFloat() + 0.5f,
+//                            box2dWorld,
+//                            pixelsPerMeter,
+//                            2f))
+//        }
         val targetSeedPile = min((yOffsetCurrent/4).toInt(), 3)
         if (entities.count { it is SeedPile } < targetSeedPile) {
             entities.add(

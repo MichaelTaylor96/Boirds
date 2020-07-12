@@ -15,7 +15,8 @@ class CollisionManager(
         private val localDistance: Float
         ) : ContactListener {
 
-    private val entitiesToDestroy = mutableListOf<Mortal>()
+    private val entitiesToDestroy = mutableListOf<Destroyable>()
+    val entitiesToCreate = mutableListOf<Bird>()
 
     fun destroyEntities() {
         entitiesToDestroy.forEach {
@@ -24,6 +25,11 @@ class CollisionManager(
                 entities.remove(it)
             }
         }
+    }
+
+    fun createEntities() {
+        entities.addAll(entitiesToCreate)
+        entitiesToCreate.clear()
     }
 
     override fun endContact(contact: Contact?) {}
@@ -66,10 +72,11 @@ class CollisionManager(
         bird.body.setLinearVelocity(0f, 0f)
 
         seed.timesBeenEaten++
+        val spawnPos = seed.position
         if (seed.timesBeenEaten > 4) {
             repeat(5) {
                 val randomOffset = Vector2(((Math.random() * 5) - 2.5).toFloat(), ((Math.random() * 5) - 2.5).toFloat())
-                val position = seed.position.add(randomOffset)
+                val position = spawnPos.add(randomOffset)
                 val variableFlockingPower = (MathUtils.random() * flockingPower * 2 + 0.5 * flockingPower).toFloat()
                 val variableMaxSpeed = (MathUtils.random() * maxSpeed * 2 + 0.5 * maxSpeed).toFloat()
                 val variableMaxAcceleration = (MathUtils.random() * maxAcceleration * 0.9 + 0.1 * maxAcceleration).toFloat()
@@ -86,11 +93,9 @@ class CollisionManager(
                         variableMaxSpeed,
                         variableMaxAcceleration
                 )
-                entities.add(newBird)
+                entitiesToCreate.add(newBird)
             }
-
-            seed.die()
-            if (entities.contains(seed)) entities.remove(seed)
+            entitiesToDestroy.add(seed)
         }
     }
 

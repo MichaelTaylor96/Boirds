@@ -53,7 +53,7 @@ class Wolf(
     private var drag = Vector2()
     private val dragFactor = 0.04f
     private val torqueFactor = 0.1f
-    private val rotationalDragFactor = 0.05f
+    private val rotationalDragFactor = 0.005f
     private val maxAcceleration = 10f
 
     override fun update(entities: Set<Any>) {
@@ -107,7 +107,7 @@ class Wolf(
         val vectorToTarget = target.position.cpy().sub(position)
         val distance = vectorToTarget.len()
         val proximity = awareness / distance
-        return vectorToTarget.setLength(proximity)
+        return vectorToTarget.setLength(proximity + 2)
     }
 
     private fun rotationalDrag(): Float {
