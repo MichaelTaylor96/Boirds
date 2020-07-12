@@ -49,7 +49,6 @@ class ForestRun : KtxScreen {
             3f,
             yOffsetCurrent
     )
-    private val tree = Tree(Vector2(5f, 1f), 1f, box2dWorld, pixelsPerMeter, 2.5f)
     private val wolf = Wolf(Vector2(-5f, -1f), .5f, box2dWorld, pixelsPerMeter, 2f)
     private val lumberJack = LumberJack(Vector2(-1f, 5f), 1f, box2dWorld, pixelsPerMeter, 2.5f)
     private val seedPile = SeedPile(Vector2(-5f, - 5f), 1f, box2dWorld, pixelsPerMeter, 2f)
@@ -60,15 +59,24 @@ class ForestRun : KtxScreen {
         animatables.add(boidLord)
 
         stillSprites.add(seedPile)
-        stillSprites.add(tree)
 
         entities.add(boidLord)
         entities.add(wolf)
-        entities.add(tree)
         entities.add(lumberJack)
 
         Gdx.app.input.inputProcessor = boidLord
         box2dWorld.setContactListener(collisionManager)
+
+        var treeY = -(stageHeight/2)
+        while(treeY < (stageHeight/2) + 3) {
+            val leftTree = Tree(Vector2(-(stageWidth/2), treeY), 1f, box2dWorld, pixelsPerMeter, 2.5f)
+            val rightTree = Tree(Vector2(stageWidth/2, treeY), 1f, box2dWorld, pixelsPerMeter, 2.5f)
+            entities.add(leftTree)
+            entities.add(rightTree)
+            stillSprites.add(leftTree)
+            stillSprites.add(rightTree)
+            treeY += 2f
+        }
 
         repeat(boidCount) {
             val randomOffset = Vector2(((Math.random() * 5) - 2.5).toFloat(), ((Math.random() * 5) - 2.5).toFloat())
@@ -112,6 +120,9 @@ class ForestRun : KtxScreen {
     override fun render(delta: Float) {
         yOffsetCurrent += yOffsetStep
         boidLord.yOffsetCurrent = yOffsetCurrent
+        if ((yOffsetCurrent + 1) % 2 < 0.01f) {
+            addSideTrees()
+        }
         val pixelOffset = yOffsetCurrent * pixelsPerMeter
         camera.translate(0f, yOffsetStep)
         camera.update()
@@ -121,7 +132,6 @@ class ForestRun : KtxScreen {
         batch.use {
             Gdx.gl.glClearColor(1f, 1f,1f, 1f)
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
-// TODO move sprites by offset
             for (animatable in animatables) {
                 animatable.elapsedTime += delta
                 val img = animatable.getKeyFrame()
@@ -132,6 +142,15 @@ class ForestRun : KtxScreen {
             }
         }
         debugRenderer.render(box2dWorld, camera.combined)
+    }
+
+    fun addSideTrees() {
+        val leftTree = Tree(Vector2(-(stageWidth/2), stageHeight/2 + yOffsetCurrent + 1), 1f, box2dWorld, pixelsPerMeter, 2.5f)
+        val rightTree = Tree(Vector2(stageWidth/2, stageHeight/2 + yOffsetCurrent + 1), 1f, box2dWorld, pixelsPerMeter, 2.5f)
+        entities.add(leftTree)
+        entities.add(rightTree)
+        stillSprites.add(leftTree)
+        stillSprites.add(rightTree)
     }
 
     override fun dispose() {
