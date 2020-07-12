@@ -175,6 +175,16 @@ class ForestRun : KtxScreen {
                             pixelsPerMeter,
                             2f))
         }
+        val targetSeedPile = min((yOffsetCurrent/4).toInt(), 3)
+        if (entities.count { it is SeedPile } < targetSeedPile) {
+            entities.add(
+                    SeedPile(
+                            Vector2((Math.random()).toFloat()* stageWidth - stageWidth/2, stageHeight*2/3 + yOffsetCurrent),
+                            0.5f,
+                            box2dWorld,
+                            pixelsPerMeter,
+                            2f))
+        }
     }
     private fun removeEntitiesBelowFloor() {
         entities.filterIsInstance<HasPosition>().forEach {
