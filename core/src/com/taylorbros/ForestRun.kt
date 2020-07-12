@@ -135,7 +135,8 @@ class ForestRun : KtxScreen {
         batch.use {
             Gdx.gl.glClearColor(1f, 1f,1f, 1f)
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
-            batch.draw(bgRegion, 0f, 0f)
+            val bgOffset = (yOffsetCurrent*pixelsPerMeter)%16
+            batch.draw(bgRegion, 0f, 0f - bgOffset)
 
             for (animatable in entities.filterIsInstance<Animatable>()) {
                 animatable.elapsedTime += delta
@@ -146,7 +147,7 @@ class ForestRun : KtxScreen {
                 batch.draw(sprite.sprite, sprite.pixelX, sprite.pixelY - pixelOffset, sprite.pixelWidth, sprite.pixelHeight)
             }
         }
-        debugRenderer.render(box2dWorld, camera.combined)
+//        debugRenderer.render(box2dWorld, camera.combined)
     }
 
     fun addSideTrees() {
