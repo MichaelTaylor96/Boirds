@@ -12,6 +12,7 @@ import ktx.box2d.body
 import ktx.box2d.circle
 import ktx.box2d.mouseJointWith
 import ktx.box2d.polygon
+import kotlin.math.pow
 
 class BoidLord(
         world: World,
@@ -21,24 +22,29 @@ class BoidLord(
         override val localDistance: Float,
         override val flockingPower: Float,
         override val pixelsPerMeter: Float,
-        val stageWidth: Float,
-        val stageHeight: Float,
-        override val scaleFactor: Float
-) : Boid, InputProcessor, Animatable {
+        private val stageWidth: Float,
+        private val stageHeight: Float,
+        override val scaleFactor: Float,
+        var yOffsetCurrent: Float
+) : Boid, InputProcessor, Animatable, Updatable {
 
+    private var mouseX = 0
+    private var mouseY = 0
     override val animations: MutableMap<String, Animation<TextureRegion>> = mutableMapOf()
     override var currentAnimation = ""
     override var loop = true
     override var elapsedTime = 0f
+    private val torqueFactor = 0.5f
+    private val rotationalDragFactor = 0.05f
 
     init {
-        var animNames = listOf("up", "down", "left", "right", "eat")
-        var fileNames = listOf("birdUp.png", "birdDown.png", "birdLeft.png", "birdRight.png", "birdEat.png")
+        val animNames = listOf("up", "down", "left", "right", "eat")
+        val fileNames = listOf("birdUp.png", "birdDown.png", "birdLeft.png", "birdRight.png", "birdEat.png")
         for ((index, name) in animNames.withIndex()) {
-            var img = Texture("sprites/bird/${fileNames[index]}")
-            var tmpFrames = TextureRegion.split(img, 16, 15)
-            var animationFrames = Array<TextureRegion>(tmpFrames[0])
-            var animation = Animation<TextureRegion>(0.125f, animationFrames)
+            val img = Texture("sprites/bird/${fileNames[index]}")
+            val tmpFrames = TextureRegion.split(img, 16, 15)
+            val animationFrames = Array<TextureRegion>(tmpFrames[0])
+            val animation = Animation<TextureRegion>(0.125f, animationFrames)
             animations[name] = animation
         }
         currentAnimation = animNames[0]
@@ -75,7 +81,8 @@ class BoidLord(
     }
 
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
-        mousejoint.target = Vector2((screenX/pixelsPerMeter) - (stageWidth/2), ((screenY/pixelsPerMeter) - (stageHeight/2))*-1)
+        this.mouseX = screenX
+        this.mouseY = screenY
         return true
     }
 
@@ -101,5 +108,25 @@ class BoidLord(
 
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         return true
+    }
+
+    override fun update(entities: Set<Any>) {
+        mousejoint.target = Vector2((mouseX/pixelsPerMeter) - (stageWidth/2), ((mouseY/pixelsPerMeter) - (stageHeight/2))*-1 + yOffsetCurrent)
+        val torque = rotateIntoVelocity()
+        body.applyTorque(torque, true)
+        val rotationalDrag = rotationalDrag()
+        body.applyTorque(rotationalDrag, true)
+    }
+
+    private fun rotationalDrag(): Float {
+        val dragMagnitude = (rotationalDragFactor * body.angularVelocity).pow(2)
+        return if (body.angularVelocity < 0) dragMagnitude else -dragMagnitude
+    }
+
+    private fun rotateIntoVelocity(): Float {
+        val currentOrientation = Vector2(1f, 0f).setAngleRad(body.angle)
+        val desiredOrientation = this.body.linearVelocity
+        val difference = currentOrientation.angleRad(desiredOrientation)
+        return torqueFactor * difference
     }
 }

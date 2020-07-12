@@ -13,6 +13,8 @@ import ktx.graphics.use
 
 class ForestRun : KtxScreen {
 
+    private var yOffsetStep = 0.01f
+    private var yOffsetCurrent = 0f
     private val box2dWorld = createWorld()
     private val collisionManager = CollisionManager()
     private val batch = SpriteBatch()
@@ -21,21 +23,20 @@ class ForestRun : KtxScreen {
     private var stageHeight = Gdx.graphics.height / pixelsPerMeter
     private val camera = OrthographicCamera(stageWidth, stageHeight)
     private val debugRenderer = Box2DDebugRenderer()
-    var timeStep = 1.0f / 60.0f // TODO figure out relationship between frame rate and physics simulation rate
-    var velocityIterations = 8
-    var positionIterations = 3
+    private var timeStep = 1.0f / 60.0f
+    private var velocityIterations = 8
+    private var positionIterations = 3
 
     private val boidCount = 50
     private val maxSpeed = 10f
     private val maxAcceleration = 10f
     private val localDistance = 1.5f
     private val flockingPower = 10f
-    private val boids = mutableSetOf<Boid>()
     private val entities = mutableSetOf<Any>()
 
-    val animatables = mutableListOf<Animatable>()
-    val stillSprites = mutableListOf<HasStaticSprite>()
-    val boidLord = BoidLord(
+    private val animatables = mutableListOf<Animatable>()
+    private val stillSprites = mutableListOf<HasStaticSprite>()
+    private val boidLord = BoidLord(
             box2dWorld,
             Vector2(0f, 0f),
             0.2f,
@@ -45,13 +46,14 @@ class ForestRun : KtxScreen {
             pixelsPerMeter,
             stageWidth,
             stageHeight,
-            3f
+            3f,
+            yOffsetCurrent
     )
-    val tree = Tree(Vector2(5f, 1f), 1f, box2dWorld, pixelsPerMeter, 2.5f)
-    val wolf = Wolf(Vector2(-5f, -1f), .5f, box2dWorld, pixelsPerMeter, 2f)
-    val flame = Flame(Vector2(1f, -5f), 1f, box2dWorld, pixelsPerMeter, 1.2f)
-    val lumberJack = LumberJack(Vector2(-1f, 5f), 1f, box2dWorld, pixelsPerMeter, 2.5f)
-    val seedPile = SeedPile(Vector2(-5f, - 5f), 1f, box2dWorld, pixelsPerMeter, 2f)
+    private val tree = Tree(Vector2(5f, 1f), 1f, box2dWorld, pixelsPerMeter, 2.5f)
+    private val wolf = Wolf(Vector2(-5f, -1f), .5f, box2dWorld, pixelsPerMeter, 2f)
+    private val flame = Flame(Vector2(1f, -5f), 1f, box2dWorld, pixelsPerMeter, 1.2f)
+    private val lumberJack = LumberJack(Vector2(-1f, 5f), 1f, box2dWorld, pixelsPerMeter, 2.5f)
+    private val seedPile = SeedPile(Vector2(-5f, - 5f), 1f, box2dWorld, pixelsPerMeter, 2f)
 
     init {
         animatables.add(wolf)
@@ -97,22 +99,27 @@ class ForestRun : KtxScreen {
     }
 
     override fun render(delta: Float) {
+        yOffsetCurrent += yOffsetStep
+        boidLord.yOffsetCurrent = yOffsetCurrent
+        camera.translate(0f, yOffsetStep)
+        camera.update()
         box2dWorld.step(timeStep, velocityIterations, positionIterations)
         entities.forEach { if (it is Updatable) it.update(entities) }
 
         batch.use {
             Gdx.gl.glClearColor(1f, 1f,1f, 1f)
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
-            for (animatable in animatables) {
-                animatable.elapsedTime += delta
-                val img = animatable.getKeyFrame()
-                batch.draw(img, animatable.pixelX, animatable.pixelY, animatable.pixelWidth, animatable.pixelHeight)
-            }
-            for (sprite in stillSprites) {
-                batch.draw(sprite.sprite, sprite.pixelX, sprite.pixelY, sprite.pixelWidth, sprite.pixelHeight)
-            }
+// TODO move sprites by offset
+//            for (animatable in animatables) {
+//                animatable.elapsedTime += delta
+//                val img = animatable.getKeyFrame()
+//                batch.draw(img, animatable.pixelX, animatable.pixelY, animatable.pixelWidth, animatable.pixelHeight)
+//            }
+//            for (sprite in stillSprites) {
+//                batch.draw(sprite.sprite, sprite.pixelX, sprite.pixelY, sprite.pixelWidth, sprite.pixelHeight)
+//            }
         }
-        debugRenderer!!.render(box2dWorld, camera.combined)
+        debugRenderer.render(box2dWorld, camera.combined)
     }
 
     override fun dispose() {
