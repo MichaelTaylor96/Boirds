@@ -4,7 +4,6 @@ import com.badlogic.gdx.physics.box2d.Contact
 import com.badlogic.gdx.physics.box2d.ContactImpulse
 import com.badlogic.gdx.physics.box2d.ContactListener
 import com.badlogic.gdx.physics.box2d.Manifold
-import kotlin.reflect.typeOf
 
 
 class CollisionManager : ContactListener {
@@ -19,6 +18,11 @@ class CollisionManager : ContactListener {
             val wolf = bodies.find{it.userData is Wolf}!!.userData as Wolf
             val bird = bodies.find{it.userData is Bird}!!.userData as Bird
             handleWolfEat(wolf, bird)
+        }
+
+        if (bodies.any{it.userData is Mortal} && bodies.any{it.userData is Lethal}) {
+            val mortal = bodies.find{it.userData is Mortal}!!.userData as Mortal
+            mortal.die()
         }
     }
 
