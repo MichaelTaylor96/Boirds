@@ -18,7 +18,7 @@ class LumberJack(
         world: World,
         override val pixelsPerMeter: Float,
         override val scaleFactor: Float
-        ) : Obstacle, Animatable {
+        ) : Obstacle, Animatable, Lethal {
 
     override val animations: MutableMap<String, Animation<TextureRegion>> = mutableMapOf()
     override var currentAnimation = ""
@@ -40,6 +40,7 @@ class LumberJack(
 
     private val body = world.body {
         type = BodyDef.BodyType.StaticBody
+        userData = this@LumberJack
         this.position.set(position)
         circle(radius = size/4, position = Vector2(-size, -size/2))
         circle(radius = size/4, position = Vector2(-size/2, -size/2))

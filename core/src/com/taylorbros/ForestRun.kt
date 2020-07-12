@@ -16,7 +16,6 @@ class ForestRun : KtxScreen {
     private var yOffsetStep = 0.01f
     private var yOffsetCurrent = 0f
     private val box2dWorld = createWorld()
-    private val collisionManager = CollisionManager()
     private val batch = SpriteBatch()
     private val pixelsPerMeter = 50f
     private var stageWidth = Gdx.graphics.width / pixelsPerMeter
@@ -34,36 +33,37 @@ class ForestRun : KtxScreen {
     private val flockingPower = 10f
     private val entities = mutableSetOf<Any>()
 
-    private val animatables = mutableListOf<Animatable>()
-    private val stillSprites = mutableListOf<HasStaticSprite>()
-    private val boidLord = BoidLord(
-            box2dWorld,
-            Vector2(0f, 0f),
-            0.2f,
-            10f,
-            localDistance,
-            flockingPower,
-            pixelsPerMeter,
-            stageWidth,
-            stageHeight,
-            3f,
-            yOffsetCurrent
-    )
-    private val wolf = Wolf(Vector2(-5f, -1f), .5f, box2dWorld, pixelsPerMeter, 2f)
-    private val lumberJack = LumberJack(Vector2(-1f, 5f), 1f, box2dWorld, pixelsPerMeter, 2.5f)
-    private val seedPile = SeedPile(Vector2(-5f, 7f), 1f, box2dWorld, pixelsPerMeter, 2f)
+    private val collisionManager = CollisionManager(entities)
 
     init {
-        animatables.add(wolf)
-        animatables.add(lumberJack)
-        animatables.add(boidLord)
-
-        stillSprites.add(seedPile)
-
-        entities.add(boidLord)
-        entities.add(wolf)
-        entities.add(lumberJack)
-        entities.add(seedPile)
+        val boidLord = BoidLord(
+                box2dWorld,
+                Vector2(0f, 0f),
+                0.2f,
+                10f,
+                localDistance,
+                flockingPower,
+                pixelsPerMeter,
+                stageWidth,
+                stageHeight,
+                3f,
+                yOffsetCurrent
+        )
+        entities.add(
+                boidLord
+        )
+        entities.add(
+                Wolf(Vector2(-5f, -1f), .5f, box2dWorld, pixelsPerMeter, 2f)
+        )
+        entities.add(
+                Tree(Vector2(5f, 1f), 1f, box2dWorld, pixelsPerMeter, 2.5f)
+        )
+        entities.add(
+                LumberJack(Vector2(-1f, 5f), 1f, box2dWorld, pixelsPerMeter, 2.5f)
+        )
+        entities.add(
+                SeedPile(Vector2(-5f, 7f), 1f, box2dWorld, pixelsPerMeter, 2f)
+        )
 
         Gdx.app.input.inputProcessor = boidLord
         box2dWorld.setContactListener(collisionManager)
@@ -74,8 +74,6 @@ class ForestRun : KtxScreen {
             val rightTree = Tree(Vector2(stageWidth/2, treeY), 1f, box2dWorld, pixelsPerMeter, 2.5f)
             entities.add(leftTree)
             entities.add(rightTree)
-            stillSprites.add(leftTree)
-            stillSprites.add(rightTree)
             treeY += 2f
         }
 
@@ -98,8 +96,6 @@ class ForestRun : KtxScreen {
                     variableMaxSpeed,
                     variableMaxAcceleration
             )
-
-            animatables.add(newBird)
             entities.add(newBird)
         }
 
@@ -113,14 +109,13 @@ class ForestRun : KtxScreen {
                     pixelsPerMeter,
                     1.2f,
                     yOffsetStep)
-            animatables.add(flame)
             entities.add(flame)
         }
     }
 
     override fun render(delta: Float) {
         yOffsetCurrent += yOffsetStep
-        boidLord.yOffsetCurrent = yOffsetCurrent
+        entities.filterIsInstance<Offsettable>().forEach { it.yOffsetCurrent = yOffsetCurrent }
         if ((yOffsetCurrent + 1) % 2 < 0.01f) {
             addSideTrees()
         }
@@ -128,17 +123,17 @@ class ForestRun : KtxScreen {
         camera.translate(0f, yOffsetStep)
         camera.update()
         box2dWorld.step(timeStep, velocityIterations, positionIterations)
+        collisionManager.destroyEntities()
         entities.forEach { if (it is Updatable) it.update(entities) }
-
         batch.use {
             Gdx.gl.glClearColor(1f, 1f,1f, 1f)
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
-            for (animatable in animatables) {
+            for (animatable in entities.filterIsInstance<Animatable>()) {
                 animatable.elapsedTime += delta
                 val img = animatable.getKeyFrame()
                 batch.draw(img, animatable.pixelX, animatable.pixelY - pixelOffset, animatable.pixelWidth, animatable.pixelHeight)
             }
-            for (sprite in stillSprites) {
+            for (sprite in entities.filterIsInstance<HasStaticSprite>()) {
                 batch.draw(sprite.sprite, sprite.pixelX, sprite.pixelY - pixelOffset, sprite.pixelWidth, sprite.pixelHeight)
             }
         }
@@ -150,8 +145,6 @@ class ForestRun : KtxScreen {
         val rightTree = Tree(Vector2(stageWidth/2, stageHeight/2 + yOffsetCurrent + 1), 1f, box2dWorld, pixelsPerMeter, 2.5f)
         entities.add(leftTree)
         entities.add(rightTree)
-        stillSprites.add(leftTree)
-        stillSprites.add(rightTree)
     }
 
     override fun dispose() {

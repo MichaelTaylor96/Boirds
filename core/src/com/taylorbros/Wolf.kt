@@ -17,7 +17,7 @@ class Wolf(
         world: World, override val
         pixelsPerMeter: Float,
         override val scaleFactor: Float
-) : Obstacle, Animatable, Updatable {
+) : Obstacle, Animatable, Updatable, Lethal {
 
     override val animations: MutableMap<String, Animation<TextureRegion>> = mutableMapOf()
     override var currentAnimation = ""
@@ -45,7 +45,6 @@ class Wolf(
     val body = world.body {
         type = BodyDef.BodyType.DynamicBody
         userData = this@Wolf
-
         this.position.set(position)
         box(width = size, height = size*2)
     }

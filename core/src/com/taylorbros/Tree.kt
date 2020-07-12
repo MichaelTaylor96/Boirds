@@ -19,6 +19,7 @@ class Tree(
 
     private val body = world.body {
         type = BodyDef.BodyType.StaticBody
+        userData = this@Tree
         this.position.set(position)
         circle(radius = size)
     }

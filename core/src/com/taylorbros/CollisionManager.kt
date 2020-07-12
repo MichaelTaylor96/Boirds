@@ -4,10 +4,21 @@ import com.badlogic.gdx.physics.box2d.Contact
 import com.badlogic.gdx.physics.box2d.ContactImpulse
 import com.badlogic.gdx.physics.box2d.ContactListener
 import com.badlogic.gdx.physics.box2d.Manifold
-import kotlin.reflect.typeOf
 
 
-class CollisionManager : ContactListener {
+class CollisionManager(private val entities: MutableSet<Any>) : ContactListener {
+
+    private val entitiesToDestroy = mutableListOf<Mortal>()
+
+    fun destroyEntities() {
+        entitiesToDestroy.forEach {
+            it.die()
+            if (entities.contains(it)) {
+                entities.remove(it)
+            }
+        }
+    }
+
     override fun endContact(contact: Contact?) {}
 
     override fun beginContact(contact: Contact?) {
@@ -20,8 +31,14 @@ class CollisionManager : ContactListener {
             val bird = bodies.find{it.userData is Bird}!!.userData as Bird
             handleWolfEat(wolf, bird)
         }
-        else if (bodies.any{it.userData is Bird} && bodies.any{it.userData is SeedPile}) {
-            val seedPile = bodies.find{it.userData is Wolf}!!.userData as SeedPile
+
+        if (bodies.any{it.userData is Mortal} && bodies.any{it.userData is Lethal}) {
+            val mortal = bodies.find { it.userData is Mortal }!!.userData as Mortal
+            entitiesToDestroy.add(mortal)
+        }
+
+        if (bodies.any{it.userData is Bird} && bodies.any{it.userData is SeedPile}) {
+            val seedPile = bodies.find{it.userData is SeedPile}!!.userData as SeedPile
             val bird = bodies.find{it.userData is Bird}!!.userData as Bird
             handleBirdEat(bird, seedPile)
         }
@@ -42,10 +59,8 @@ class CollisionManager : ContactListener {
     }
 
     override fun preSolve(contact: Contact?, oldManifold: Manifold?) {
-//        TODO("Not yet implemented")
     }
 
     override fun postSolve(contact: Contact?, impulse: ContactImpulse?) {
-//        TODO("Not yet implemented")
     }
 }
