@@ -14,10 +14,10 @@ import kotlin.math.pow
 class Wolf(
         position: Vector2,
         override val size: Float,
-        world: World, override val
+        private val world: World, override val
         pixelsPerMeter: Float,
         override val scaleFactor: Float
-) : Obstacle, Animatable, Updatable, Lethal {
+) : Obstacle, Animatable, Updatable, Lethal, Mortal {
 
     override val animations: MutableMap<String, Animation<TextureRegion>> = mutableMapOf()
     override var currentAnimation = ""
@@ -123,4 +123,13 @@ class Wolf(
 
     override val position: Vector2
         get() = this.body.position
+
+    var dead = false
+
+    override fun die() {
+        if (!dead) {
+            dead = true
+            world.destroyBody(this.body)
+        }
+    }
 }

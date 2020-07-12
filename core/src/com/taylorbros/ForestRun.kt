@@ -58,18 +58,6 @@ class ForestRun : KtxScreen {
         entities.add(
                 boidLord
         )
-//        entities.add(
-//                Wolf(Vector2(-5f, -1f), .5f, box2dWorld, pixelsPerMeter, 2f)
-//        )
-//        entities.add(
-//                Tree(Vector2(5f, 1f), 1f, box2dWorld, pixelsPerMeter, 2.5f)
-//        )
-//        entities.add(
-//                LumberJack(Vector2(-1f, 5f), 1f, box2dWorld, pixelsPerMeter, 2.5f)
-//        )
-//        entities.add(
-//                SeedPile(Vector2(-5f, 7f), 1f, box2dWorld, pixelsPerMeter, 2f)
-//        )
 
         Gdx.app.input.inputProcessor = boidLord
         box2dWorld.setContactListener(collisionManager)
@@ -77,14 +65,14 @@ class ForestRun : KtxScreen {
         bgRegion.texture = background
         bgRegion.setRegion(0f, 0f, (stageWidth * pixelsPerMeter) + 16, (stageHeight * pixelsPerMeter) + 16)
 
-//        var treeY = -(stageHeight/2)
-//        while(treeY < (stageHeight/2) + 3) {
-//            val leftTree = Tree(Vector2(-(stageWidth/2), treeY), 1f, box2dWorld, pixelsPerMeter, 2.5f)
-//            val rightTree = Tree(Vector2(stageWidth/2, treeY), 1f, box2dWorld, pixelsPerMeter, 2.5f)
-//            entities.add(leftTree)
-//            entities.add(rightTree)
-//            treeY += 2f
-//        }
+        var treeY = -(stageHeight/2)
+        while(treeY < (stageHeight/2 + 3)) {
+            val leftTree = Tree(Vector2(-(stageWidth/2), treeY), 1f, box2dWorld, pixelsPerMeter, 2.5f)
+            val rightTree = Tree(Vector2(stageWidth/2, treeY), 1f, box2dWorld, pixelsPerMeter, 2.5f)
+            entities.add(leftTree)
+            entities.add(rightTree)
+            treeY += 2f
+        }
 
         repeat(boidCount) {
             val randomOffset = Vector2(((Math.random() * 5) - 2.5).toFloat(), ((Math.random() * 5) - 2.5).toFloat())
@@ -126,8 +114,8 @@ class ForestRun : KtxScreen {
         yOffsetCurrent += yOffsetStep
         conditionallyAddEntities()
         entities.filterIsInstance<Offsettable>().forEach { it.yOffsetCurrent = yOffsetCurrent }
-        if ((yOffsetCurrent + 1) % 2 < 0.01f) {
-//            addSideTrees()
+        if ((yOffsetCurrent) % 2 < 0.01f) {
+            addSideTrees()
         }
         val pixelOffset = yOffsetCurrent * pixelsPerMeter
         camera.translate(0f, yOffsetStep)
@@ -155,7 +143,7 @@ class ForestRun : KtxScreen {
     }
 
     private fun conditionallyAddEntities() {
-        val targetWolves = yOffsetCurrent/4.toInt()
+        val targetWolves = min((yOffsetCurrent/10).toInt(), 5)
         if (entities.count { it is Wolf } < targetWolves) {
             entities.add(
                     Wolf(
@@ -165,7 +153,7 @@ class ForestRun : KtxScreen {
                             pixelsPerMeter,
                             2f))
         }
-        val targetTrees = min((yOffsetCurrent*4).toInt(), 40)
+        val targetTrees = min((yOffsetCurrent).toInt() + 20, 30)
         if (entities.count { it is Tree } < targetTrees) {
             entities.add(
                     Tree(
@@ -185,6 +173,16 @@ class ForestRun : KtxScreen {
                             pixelsPerMeter,
                             2f))
         }
+        val targetLumberJacks = min((yOffsetCurrent/10).toInt(), 5)
+        if (entities.count { it is LumberJack } < targetLumberJacks) {
+            entities.add(
+                    LumberJack(
+                            Vector2((Math.random()).toFloat()* stageWidth - stageWidth/2, stageHeight*2/3 + yOffsetCurrent),
+                            1f,
+                            box2dWorld,
+                            pixelsPerMeter,
+                            2.5f))
+        }
     }
     private fun removeEntitiesBelowFloor() {
         entities.filterIsInstance<HasPosition>().forEach {
@@ -197,12 +195,12 @@ class ForestRun : KtxScreen {
         }
     }
 
-//    fun addSideTrees() {
-//        val leftTree = Tree(Vector2(-(stageWidth/2), stageHeight/2 + yOffsetCurrent + 1), 1f, box2dWorld, pixelsPerMeter, 2.5f)
-//        val rightTree = Tree(Vector2(stageWidth/2, stageHeight/2 + yOffsetCurrent + 1), 1f, box2dWorld, pixelsPerMeter, 2.5f)
-//        entities.add(leftTree)
-//        entities.add(rightTree)
-//    }
+    fun addSideTrees() {
+        val leftTree = Tree(Vector2(-(stageWidth/2), stageHeight/2 + yOffsetCurrent + 1), 1f, box2dWorld, pixelsPerMeter, 2.5f)
+        val rightTree = Tree(Vector2(stageWidth/2, stageHeight/2 + yOffsetCurrent + 1), 1f, box2dWorld, pixelsPerMeter, 2.5f)
+        entities.add(leftTree)
+        entities.add(rightTree)
+    }
 
     override fun dispose() {
         batch.dispose()
