@@ -32,9 +32,15 @@ class CollisionManager(private val entities: MutableSet<Any>) : ContactListener 
             handleWolfEat(wolf, bird)
         }
 
-        if (bodies.any{it.userData is Mortal} && bodies.any{it.userData is Lethal}) {
-            val mortal = bodies.find { it.userData is Mortal }!!.userData as Mortal
-            entitiesToDestroy.add(mortal)
+        val userDataA = bodyA.userData
+        val userDataB = bodyB.userData
+
+        if (userDataA is Mortal && userDataB is Lethal) {
+            entitiesToDestroy.add(userDataA)
+        }
+
+        if (userDataB is Mortal && userDataA is Lethal) {
+            entitiesToDestroy.add(userDataB)
         }
 
         if (bodies.any{it.userData is Bird} && bodies.any{it.userData is SeedPile}) {
