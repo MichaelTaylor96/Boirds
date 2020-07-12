@@ -8,13 +8,13 @@ import ktx.box2d.body
 import ktx.box2d.circle
 import ktx.box2d.polygon
 
-class Tree(
+class Tree (
         position: Vector2,
         override val size: Float,
-        world: World,
+        private val world: World,
         override val pixelsPerMeter: Float,
         override val scaleFactor: Float
-) : Obstacle, HasStaticSprite {
+) : Obstacle, HasStaticSprite, Destroyable {
     override val sprite = Texture("sprites/bigTree.png")
 
     private val body = world.body {
@@ -26,5 +26,14 @@ class Tree(
 
     override val position: Vector2
         get() = this.body.position
+
+    var dead = false
+
+    override fun die() {
+        if (!dead) {
+            dead = true
+            world.destroyBody(this.body)
+        }
+    }
 
 }
