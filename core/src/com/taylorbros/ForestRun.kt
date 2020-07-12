@@ -59,12 +59,6 @@ class ForestRun : KtxScreen {
                 boidLord
         )
 //        entities.add(
-//                Wolf(Vector2(-5f, -1f), .5f, box2dWorld, pixelsPerMeter, 2f)
-//        )
-//        entities.add(
-//                Tree(Vector2(5f, 1f), 1f, box2dWorld, pixelsPerMeter, 2.5f)
-//        )
-//        entities.add(
 //                LumberJack(Vector2(-1f, 5f), 1f, box2dWorld, pixelsPerMeter, 2.5f)
 //        )
 //        entities.add(

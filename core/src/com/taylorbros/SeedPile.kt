@@ -11,10 +11,10 @@ import ktx.box2d.circle
 class SeedPile(
         position: Vector2,
         override val size: Float,
-        world: World,
+        private val world: World,
         override val pixelsPerMeter: Float,
         override val scaleFactor: Float
-) : HasPosition, HasSize, HasStaticSprite {
+) : HasPosition, HasSize, HasStaticSprite, Destroyable {
         override val sprite = Texture("sprites/seed.png")
         var timesBeenEaten = 0
 
@@ -31,4 +31,13 @@ class SeedPile(
 
         override val position: Vector2
         get() = this.body.position
+
+    var dead = false
+
+    override fun die() {
+        if (!dead) {
+            dead = true
+            world.destroyBody(this.body)
+        }
+    }
 }
