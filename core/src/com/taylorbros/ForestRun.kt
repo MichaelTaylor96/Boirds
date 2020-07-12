@@ -51,7 +51,7 @@ class ForestRun : KtxScreen {
     )
     private val tree = Tree(Vector2(5f, 1f), 1f, box2dWorld, pixelsPerMeter, 2.5f)
     private val wolf = Wolf(Vector2(-5f, -1f), .5f, box2dWorld, pixelsPerMeter, 2f)
-    private val flame = Flame(Vector2(1f, -5f), 1f, box2dWorld, pixelsPerMeter, 1.2f)
+    private val flame = Flame(Vector2(1f, -5f), 1f, box2dWorld, pixelsPerMeter, 1.2f, yOffsetStep)
     private val lumberJack = LumberJack(Vector2(-1f, 5f), 1f, box2dWorld, pixelsPerMeter, 2.5f)
     private val seedPile = SeedPile(Vector2(-5f, - 5f), 1f, box2dWorld, pixelsPerMeter, 2f)
 
