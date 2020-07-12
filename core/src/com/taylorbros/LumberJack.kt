@@ -41,15 +41,15 @@ class LumberJack(
     private val body = world.body {
         type = BodyDef.BodyType.StaticBody
         this.position.set(position)
+        circle(radius = size/4, position = Vector2(-size, -size/2))
         circle(radius = size/4, position = Vector2(-size/2, -size/2))
-        circle(radius = size/4, position = Vector2(0f, -size/2))
-        circle(radius = size*2/3, position = Vector2(size, 0f))
-        polygon(Vector2(-size*2/3, -size/3),
-                Vector2(-size*2/3, 0f),
-                Vector2(-size*2/6, size/3),
-                Vector2(size/6, size/3),
-                Vector2(size/3, 0f),
-                Vector2(size/3, -size/3)
+        circle(radius = size*2/3, position = Vector2(size/2, 0f))
+        polygon(Vector2(-size*7/6, -size/3),
+                Vector2(-size*7/6, 0f),
+                Vector2(-size*5/6, size/3),
+                Vector2(size/6 - size/2, size/3),
+                Vector2(size/3 - size/2, 0f),
+                Vector2(size/3 - size/2, -size/3)
                 )
         box(width = size, height = size/6, position = Vector2(size/3, 0f))
     }

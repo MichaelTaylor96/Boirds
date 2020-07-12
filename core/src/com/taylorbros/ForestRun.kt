@@ -33,6 +33,7 @@ class ForestRun : KtxScreen {
     private val entities = mutableSetOf<Any>()
 
     val animatables = mutableListOf<Animatable>()
+    val stillSprites = mutableListOf<HasStaticSprite>()
     val boidLord = BoidLord(
             box2dWorld,
             Vector2(0f, 0f),
@@ -45,17 +46,24 @@ class ForestRun : KtxScreen {
             stageHeight,
             3f
     )
-    val tree = Tree(Vector2(5f, 1f), 1f, box2dWorld)
+    val tree = Tree(Vector2(5f, 1f), 1f, box2dWorld, pixelsPerMeter, 2.5f)
     val wolf = Wolf(Vector2(-5f, -1f), 1f, box2dWorld, pixelsPerMeter, 2f)
     val flame = Flame(Vector2(1f, -5f), 1f, box2dWorld)
-    val lumberJack = LumberJack(Vector2(-1f, 5f), 1f, box2dWorld, pixelsPerMeter, 3f)
-    val seedPile = SeedPile(Vector2(-5f, - 5f), 1f, box2dWorld)
+    val lumberJack = LumberJack(Vector2(-1f, 5f), 1f, box2dWorld, pixelsPerMeter, 2.5f)
+    val seedPile = SeedPile(Vector2(-5f, - 5f), 1f, box2dWorld, pixelsPerMeter, 2f)
 
     init {
         animatables.add(wolf)
         animatables.add(lumberJack)
-        entities.add(boidLord)
         animatables.add(boidLord)
+
+        stillSprites.add(seedPile)
+        stillSprites.add(tree)
+
+        entities.add(boidLord)
+        entities.add(tree)
+        entities.add(lumberJack)
+
         Gdx.app.input.inputProcessor = boidLord
 
         repeat(boidCount) {
@@ -99,6 +107,9 @@ class ForestRun : KtxScreen {
                 }
                 val img = animatable.getKeyFrame()
                 batch.draw(img, animatable.pixelX, animatable.pixelY, animatable.pixelWidth, animatable.pixelHeight)
+            }
+            for (sprite in stillSprites) {
+                batch.draw(sprite.sprite, sprite.pixelX, sprite.pixelY, sprite.pixelWidth, sprite.pixelHeight)
             }
         }
         debugRenderer!!.render(box2dWorld, camera.combined)
