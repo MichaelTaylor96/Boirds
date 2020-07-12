@@ -68,13 +68,16 @@ class Wolf(
             val target = localBoids.sortedBy{ position.dst(it.position) - size - it.size }[0]
             desiredMovement.add(seekingForce(target))
 
-            if (eating && elapsedTime - timeStartedEating > 3) {
-                eating = false
-                currentAnimation = "run"
+            if (eating) {
+                body.setLinearVelocity(0f, 0f)
+                if (elapsedTime - timeStartedEating > 3) {
+                    eating = false
+                    currentAnimation = "run"
+                }
             }
         }
 
-        if (!sleeping && !eating) {
+        if (!sleeping && !eating && birdsEaten < 5) {
             if (desiredMovement.len() > maxAcceleration) {
                 desiredMovement.setLength(maxAcceleration)
             }
@@ -85,6 +88,10 @@ class Wolf(
             body.applyTorque(torque, true)
             val rotationalDrag = rotationalDrag()
             body.applyTorque(rotationalDrag, true)
+        }
+
+        else if (birdsEaten > 4) {
+            body.applyForceToCenter(Vector2(0f, 10f), true)
         }
     }
 

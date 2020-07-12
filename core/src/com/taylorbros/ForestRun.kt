@@ -37,7 +37,7 @@ class ForestRun : KtxScreen {
     private val flockingPower = 10f
 
     private val entities = mutableSetOf<Any>()
-    private val collisionManager = CollisionManager(entities)
+    private val collisionManager = CollisionManager(entities, box2dWorld, pixelsPerMeter, flockingPower, maxSpeed, maxAcceleration, localDistance)
 
     init {
         val boidLord = BoidLord(
