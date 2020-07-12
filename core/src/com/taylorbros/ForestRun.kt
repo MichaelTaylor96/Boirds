@@ -56,18 +56,18 @@ class ForestRun : KtxScreen {
         entities.add(
                 boidLord
         )
-        entities.add(
-                Wolf(Vector2(-5f, -1f), .5f, box2dWorld, pixelsPerMeter, 2f)
-        )
-        entities.add(
-                Tree(Vector2(5f, 1f), 1f, box2dWorld, pixelsPerMeter, 2.5f)
-        )
-        entities.add(
-                LumberJack(Vector2(-1f, 5f), 1f, box2dWorld, pixelsPerMeter, 2.5f)
-        )
-        entities.add(
-                SeedPile(Vector2(-5f, 7f), 1f, box2dWorld, pixelsPerMeter, 2f)
-        )
+//        entities.add(
+//                Wolf(Vector2(-5f, -1f), .5f, box2dWorld, pixelsPerMeter, 2f)
+//        )
+//        entities.add(
+//                Tree(Vector2(5f, 1f), 1f, box2dWorld, pixelsPerMeter, 2.5f)
+//        )
+//        entities.add(
+//                LumberJack(Vector2(-1f, 5f), 1f, box2dWorld, pixelsPerMeter, 2.5f)
+//        )
+//        entities.add(
+//                SeedPile(Vector2(-5f, 7f), 1f, box2dWorld, pixelsPerMeter, 2f)
+//        )
 
         Gdx.app.input.inputProcessor = boidLord
         box2dWorld.setContactListener(collisionManager)
@@ -122,6 +122,7 @@ class ForestRun : KtxScreen {
 
     override fun render(delta: Float) {
         yOffsetCurrent += yOffsetStep
+        conditionallyAddEntities()
         entities.filterIsInstance<Offsettable>().forEach { it.yOffsetCurrent = yOffsetCurrent }
         if ((yOffsetCurrent + 1) % 2 < 0.01f) {
             addSideTrees()
@@ -148,6 +149,20 @@ class ForestRun : KtxScreen {
             }
         }
 //        debugRenderer.render(box2dWorld, camera.combined)
+    }
+
+    fun conditionallyAddEntities() {
+        val targetWolves = yOffsetCurrent/4.toInt()
+        if (entities.count { it is Wolf } < targetWolves) {
+            entities.add(
+                    Wolf(
+                            Vector2((Math.random()).toFloat()* stageWidth - stageWidth/2, stageHeight*2/3 + yOffsetCurrent),
+                            .5f,
+                            box2dWorld,
+                            pixelsPerMeter,
+                            2f))
+        }
+
     }
 
     fun addSideTrees() {
