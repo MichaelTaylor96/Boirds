@@ -12,6 +12,7 @@ import ktx.box2d.body
 import ktx.box2d.circle
 import ktx.box2d.polygon
 import kotlin.math.absoluteValue
+import kotlin.math.pow
 
 class Bird(
         override val size: Float,
@@ -61,8 +62,15 @@ class Bird(
         body.linearVelocity = initialVelocity
     }
 
+    private var desiredMovement = Vector2()
+    private var drag = Vector2()
+    private val dragFactor = 0.04f
+    private val avoidFactor = 10f
+    private val torqueFactor = 0.1f
+    private val rotationalDragFactor = 0.05f
+
     override fun update(entities: Set<Any>) {
-        val desiredMovement = Vector2()
+        desiredMovement = Vector2()
         val localBoids = localBoidsFrom(entities)
         if (localBoids.isNotEmpty()) {
             desiredMovement.add(separationForce(localBoids))
@@ -73,15 +81,40 @@ class Bird(
         if (localObstacles.isNotEmpty()) {
             desiredMovement.add(obstacleAvoidanceForce(localObstacles))
         }
+        val targets = entities.filterIsInstance<Target>()
+        if (targets.isNotEmpty()) {
+//            desiredMovement.add(targetsSeekingForce(targets))
+        }
         if (desiredMovement.len() > maxAcceleration) {
             desiredMovement.setLength(maxAcceleration)
         }
-        velocity.add(desiredMovement)
-        if (velocity.len() > maxSpeed) {
-            velocity.setLength(maxSpeed)
-        }
-        position.add(velocity)
-        reflectEdges()
+        body.applyForceToCenter(desiredMovement, true)
+        drag = dragForce()
+        body.applyForceToCenter(drag, true)
+        val angularVelocity = body.angularVelocity
+        val torque = rotateIntoVelocity()
+        body.applyTorque(torque, true)
+        val rotationalDrag = rotationalDrag()
+        body.applyTorque(rotationalDrag, true)
+        setAnimationDirection()
+    }
+
+    private fun rotationalDrag(): Float {
+        val dragMagnitude = (rotationalDragFactor * body.angularVelocity).pow(2)
+        return if (body.angularVelocity < 0) dragMagnitude else -dragMagnitude
+    }
+
+    private fun rotateIntoVelocity(): Float {
+        val currentOrientation = Vector2(1f, 0f).setAngleRad(body.angle)
+        val desiredOrientation = this.body.linearVelocity
+        val difference = currentOrientation.angleRad(desiredOrientation)
+        return torqueFactor * difference
+    }
+
+    private fun dragForce(): Vector2 {
+        val magnitude = this.body.linearVelocity.len().pow(2) * dragFactor
+        val dragVector = this.body.linearVelocity.cpy().rotate(180f)
+        return dragVector.setLength(magnitude)
     }
 
     private fun localObstaclesFrom(entities: Set<Any>): List<Obstacle> {
@@ -98,30 +131,6 @@ class Bird(
                     && this != it
                     && (this.position.dst(it.position) - this.size - it.size) < localDistance
         }.map { it as Boid }
-    }
-
-    private fun reflectEdges() {  // TODO implement this somewhere else as generalized collision (box2d?)
-        if (position.x > Gdx.graphics.width) {
-            velocity.x = - velocity.x.absoluteValue
-        }
-        if (position.y > Gdx.graphics.height) {
-            velocity.y = - velocity.y.absoluteValue
-        }
-        if (position.x < 0) {
-            velocity.x = velocity.x.absoluteValue
-        }
-        if (position.y < 0) {
-            velocity.y = velocity.y.absoluteValue
-        }
-    }
-
-    private fun reflectObstacles(obstacles: Set<Obstacle>) { // TODO implement this somewhere else as generalized collision (box2d?)
-        obstacles.forEach {
-            if (this.position.dst(it.position) < (it.size + this.size)) {
-                this.velocity.setAngle(this.position.cpy().sub(it.position).angle())
-                this.position.set(it.position.cpy().add(this.position.cpy().sub(it.position).setLength(it.size + this.size)))
-            }
-        }
     }
 
     // steer to avoid crowding local flockmates
@@ -167,7 +176,9 @@ class Bird(
         val normalizedVelocityDifference = velocityDifference.setLength(normalizedMagnitude)
 
         // scale alignment force by the flockingPower
-        return normalizedVelocityDifference.scl(flockingPower)
+        var scalar = flockingPower
+        if (otherLocalBoids.any{it is BoidLord}) scalar *= 2
+        return normalizedVelocityDifference.scl(scalar)
     }
 
     // steer to move towards the average position of local flockmates
@@ -194,11 +205,28 @@ class Bird(
             val distance = this.position.dst(it.position)
             if (distance < (this.size + it.size + localDistance)) {
                 val avoidMagnitude = 1 - (localDistance / (distance - this.size - it.size))
-                val avoidVector = this.position.cpy().sub(it.position).setLength(avoidMagnitude)
+                val avoidVector = this.position.cpy().sub(it.position).setLength(avoidMagnitude * avoidFactor)
                 avoidForce.add(avoidVector)
             }
         }
         return avoidForce
+    }
+
+    private fun setAnimationDirection() {
+        val eighthPi = Math.PI / 8
+        val absAngle = (body.linearVelocity.angleRad() + Math.PI) % Math.PI
+        if (absAngle < eighthPi || absAngle > 7 * eighthPi) {
+            currentAnimation = "right"
+        }
+        if (absAngle < 3 * eighthPi && absAngle > eighthPi) {
+            currentAnimation = "up"
+        }
+        if (absAngle < 5 * eighthPi && absAngle > 3 * eighthPi) {
+            currentAnimation = "down"
+        }
+        if (absAngle < 7 * eighthPi && absAngle > 5 * eighthPi) {
+            currentAnimation = "left"
+        }
     }
 
     override val position: Vector2
