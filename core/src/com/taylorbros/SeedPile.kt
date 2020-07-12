@@ -14,7 +14,7 @@ class SeedPile(
         val world: World,
         override val pixelsPerMeter: Float,
         override val scaleFactor: Float
-) : HasPosition, HasSize, HasStaticSprite {
+) : HasPosition, HasSize, HasStaticSprite, Destroyable {
     override val sprite = Texture("sprites/seed.png")
     var timesBeenEaten = 0
 
@@ -33,7 +33,7 @@ class SeedPile(
     get() = this.body.position
 
     var dead = false
-    fun die() {
+    override fun die() {
         if (!dead) {
             dead = true
             world.destroyBody(this.body)
