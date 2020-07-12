@@ -12,6 +12,8 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer
 import ktx.app.KtxScreen
 import ktx.box2d.createWorld
 import ktx.graphics.use
+import java.lang.Integer.max
+import java.lang.Integer.min
 
 class ForestRun : KtxScreen {
 
@@ -75,14 +77,14 @@ class ForestRun : KtxScreen {
         bgRegion.texture = background
         bgRegion.setRegion(0f, 0f, (stageWidth * pixelsPerMeter) + 16, (stageHeight * pixelsPerMeter) + 16)
 
-        var treeY = -(stageHeight/2)
-        while(treeY < (stageHeight/2) + 3) {
-            val leftTree = Tree(Vector2(-(stageWidth/2), treeY), 1f, box2dWorld, pixelsPerMeter, 2.5f)
-            val rightTree = Tree(Vector2(stageWidth/2, treeY), 1f, box2dWorld, pixelsPerMeter, 2.5f)
-            entities.add(leftTree)
-            entities.add(rightTree)
-            treeY += 2f
-        }
+//        var treeY = -(stageHeight/2)
+//        while(treeY < (stageHeight/2) + 3) {
+//            val leftTree = Tree(Vector2(-(stageWidth/2), treeY), 1f, box2dWorld, pixelsPerMeter, 2.5f)
+//            val rightTree = Tree(Vector2(stageWidth/2, treeY), 1f, box2dWorld, pixelsPerMeter, 2.5f)
+//            entities.add(leftTree)
+//            entities.add(rightTree)
+//            treeY += 2f
+//        }
 
         repeat(boidCount) {
             val randomOffset = Vector2(((Math.random() * 5) - 2.5).toFloat(), ((Math.random() * 5) - 2.5).toFloat())
@@ -125,7 +127,7 @@ class ForestRun : KtxScreen {
         conditionallyAddEntities()
         entities.filterIsInstance<Offsettable>().forEach { it.yOffsetCurrent = yOffsetCurrent }
         if ((yOffsetCurrent + 1) % 2 < 0.01f) {
-            addSideTrees()
+//            addSideTrees()
         }
         val pixelOffset = yOffsetCurrent * pixelsPerMeter
         camera.translate(0f, yOffsetStep)
@@ -148,10 +150,11 @@ class ForestRun : KtxScreen {
                 batch.draw(sprite.sprite, sprite.pixelX, sprite.pixelY - pixelOffset, sprite.pixelWidth, sprite.pixelHeight)
             }
         }
+        removeEntitiesBelowFloor()
 //        debugRenderer.render(box2dWorld, camera.combined)
     }
 
-    fun conditionallyAddEntities() {
+    private fun conditionallyAddEntities() {
         val targetWolves = yOffsetCurrent/4.toInt()
         if (entities.count { it is Wolf } < targetWolves) {
             entities.add(
@@ -162,15 +165,34 @@ class ForestRun : KtxScreen {
                             pixelsPerMeter,
                             2f))
         }
-
+        val targetTrees = min((yOffsetCurrent*4).toInt(), 40)
+        if (entities.count { it is Tree } < targetTrees) {
+            entities.add(
+                    Tree(
+                            Vector2((Math.random()).toFloat()* stageWidth - stageWidth/2, stageHeight*2/3 + yOffsetCurrent),
+                            Math.random().toFloat() + 0.5f,
+                            box2dWorld,
+                            pixelsPerMeter,
+                            2f))
+        }
+    }
+    private fun removeEntitiesBelowFloor() {
+        entities.filterIsInstance<HasPosition>().forEach {
+            if (it.position.y < yOffsetCurrent - stageHeight / 2) {
+                if (it is Destroyable) {
+                    it.die()
+                    entities.remove(it)
+                }
+            }
+        }
     }
 
-    fun addSideTrees() {
-        val leftTree = Tree(Vector2(-(stageWidth/2), stageHeight/2 + yOffsetCurrent + 1), 1f, box2dWorld, pixelsPerMeter, 2.5f)
-        val rightTree = Tree(Vector2(stageWidth/2, stageHeight/2 + yOffsetCurrent + 1), 1f, box2dWorld, pixelsPerMeter, 2.5f)
-        entities.add(leftTree)
-        entities.add(rightTree)
-    }
+//    fun addSideTrees() {
+//        val leftTree = Tree(Vector2(-(stageWidth/2), stageHeight/2 + yOffsetCurrent + 1), 1f, box2dWorld, pixelsPerMeter, 2.5f)
+//        val rightTree = Tree(Vector2(stageWidth/2, stageHeight/2 + yOffsetCurrent + 1), 1f, box2dWorld, pixelsPerMeter, 2.5f)
+//        entities.add(leftTree)
+//        entities.add(rightTree)
+//    }
 
     override fun dispose() {
         batch.dispose()
