@@ -24,6 +24,7 @@ class Wolf(
     override var loop = true
     override var elapsedTime = 0f
     var timeStartedEating = 0f
+    var timeWokeUp = 0f
     var sleeping = true
     var birdsEaten = 0
     var eating = false
@@ -60,9 +61,10 @@ class Wolf(
         desiredMovement = Vector2()
         val localBoids = localBoidsFrom(entities)
         if (localBoids.isNotEmpty()) {
-            if (sleeping) {
-                sleeping = false
-                currentAnimation = "run"
+            if (sleeping && currentAnimation != "alert") {
+                currentAnimation = "alert"
+                loop = false
+                timeWokeUp = elapsedTime
                 awareness = 10f
             }
             val target = localBoids.sortedBy{ position.dst(it.position) - size - it.size }[0]
@@ -75,6 +77,12 @@ class Wolf(
                     currentAnimation = "run"
                 }
             }
+        }
+
+        if (currentAnimation == "alert" && elapsedTime - timeWokeUp > .5) {
+            currentAnimation = "run"
+            loop = true
+            sleeping = false
         }
 
         if (!sleeping && !eating && birdsEaten < 5) {

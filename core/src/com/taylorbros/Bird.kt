@@ -66,7 +66,7 @@ class Bird(
     private var desiredMovement = Vector2()
     private var drag = Vector2()
     private val dragFactor = 0.04f
-    private val avoidFactor = 10f
+    private val avoidFactor = 4f
     private val torqueFactor = 0.1f
     private val rotationalDragFactor = 0.05f
     var timeStartedEating = 0f
@@ -222,8 +222,8 @@ class Bird(
         val seekingForce = Vector2()
         targets.forEach {
             val seekVector = it.position.cpy().sub(this.position)
-            if (seekVector.len() > 3) {
-                seekVector.setLength(4/seekVector.len())
+            if (seekVector.len() < 3) {
+                seekVector.setLength(4f)
                 seekingForce.add(seekVector)
             }
         }
