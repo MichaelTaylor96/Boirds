@@ -154,7 +154,7 @@ class ForestRun : KtxScreen {
                             pixelsPerMeter,
                             2f))
         }
-        val targetTrees = min((yOffsetCurrent).toInt() + 20, 30)
+        val targetTrees = min((yOffsetCurrent/2).toInt() + 20, 30)
         if (entities.count { it is Tree } < targetTrees) {
             entities.add(
                     Tree(
