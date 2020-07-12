@@ -222,8 +222,10 @@ class Bird(
         val seekingForce = Vector2()
         targets.forEach {
             val seekVector = it.position.cpy().sub(this.position)
-            seekVector.setLength(4/seekVector.len())
-            seekingForce.add(seekVector)
+            if (seekVector.len() > 3) {
+                seekVector.setLength(4/seekVector.len())
+                seekingForce.add(seekVector)
+            }
         }
         return seekingForce
     }

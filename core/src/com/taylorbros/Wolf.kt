@@ -27,7 +27,7 @@ class Wolf(
     var sleeping = true
     var birdsEaten = 0
     var eating = false
-    var awareness = .5f
+    var awareness = 2f
 
     init {
         var animNames = listOf("sleep", "alert", "run", "eat")
@@ -53,7 +53,7 @@ class Wolf(
     private var drag = Vector2()
     private val dragFactor = 0.04f
     private val torqueFactor = 0.1f
-    private val rotationalDragFactor = 0.05f
+    private val rotationalDragFactor = 0.005f
     private val maxAcceleration = 10f
 
     override fun update(entities: Set<Any>) {
@@ -68,13 +68,16 @@ class Wolf(
             val target = localBoids.sortedBy{ position.dst(it.position) - size - it.size }[0]
             desiredMovement.add(seekingForce(target))
 
-            if (eating && elapsedTime - timeStartedEating > 3) {
-                eating = false
-                currentAnimation = "run"
+            if (eating) {
+                body.setLinearVelocity(0f, 0f)
+                if (elapsedTime - timeStartedEating > 3) {
+                    eating = false
+                    currentAnimation = "run"
+                }
             }
         }
 
-        if (!sleeping && !eating) {
+        if (!sleeping && !eating && birdsEaten < 5) {
             if (desiredMovement.len() > maxAcceleration) {
                 desiredMovement.setLength(maxAcceleration)
             }
@@ -85,6 +88,10 @@ class Wolf(
             body.applyTorque(torque, true)
             val rotationalDrag = rotationalDrag()
             body.applyTorque(rotationalDrag, true)
+        }
+
+        else if (birdsEaten > 4) {
+            body.applyForceToCenter(Vector2(0f, 10f), true)
         }
     }
 
@@ -100,7 +107,7 @@ class Wolf(
         val vectorToTarget = target.position.cpy().sub(position)
         val distance = vectorToTarget.len()
         val proximity = awareness / distance
-        return vectorToTarget.setLength(proximity)
+        return vectorToTarget.setLength(proximity + 2)
     }
 
     private fun rotationalDrag(): Float {

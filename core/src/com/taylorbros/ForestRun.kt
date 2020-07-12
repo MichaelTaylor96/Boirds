@@ -39,7 +39,7 @@ class ForestRun : KtxScreen {
     private val flockingPower = 10f
 
     private val entities = mutableSetOf<Any>()
-    private val collisionManager = CollisionManager(entities)
+    private val collisionManager = CollisionManager(entities, box2dWorld, pixelsPerMeter, flockingPower, maxSpeed, maxAcceleration, localDistance)
 
     init {
         val boidLord = BoidLord(
@@ -80,7 +80,7 @@ class ForestRun : KtxScreen {
             val variableFlockingPower = (MathUtils.random() * flockingPower * 2 + 0.5 * flockingPower).toFloat()
             val variableMaxSpeed = (MathUtils.random() * maxSpeed * 2 + 0.5 * maxSpeed).toFloat()
             val variableMaxAcceleration = (MathUtils.random() * maxAcceleration * 0.9 + 0.1 * maxAcceleration).toFloat()
-            val initialImpulse = Vector2().setToRandomDirection().setLength(MathUtils.random() * variableMaxSpeed)
+            val initialImpulse = Vector2(0f, 0f)
             val newBird = Bird(
                     0.1f,
                     box2dWorld,
@@ -122,6 +122,7 @@ class ForestRun : KtxScreen {
         camera.update()
         box2dWorld.step(timeStep, velocityIterations, positionIterations)
         collisionManager.destroyEntities()
+        collisionManager.createEntities()
         entities.forEach { if (it is Updatable) it.update(entities) }
         batch.use {
             Gdx.gl.glClearColor(1f, 1f,1f, 1f)
