@@ -19,7 +19,7 @@ class Flame(
         override val pixelsPerMeter: Float,
         override val scaleFactor: Float,
         var yOffsetStep: Float
-) : Obstacle, Animatable, Updatable {
+) : Obstacle, Animatable, Updatable, Lethal {
 
     override val animations: MutableMap<String, Animation<TextureRegion>> = mutableMapOf()
     override var currentAnimation = ""
@@ -42,6 +42,7 @@ class Flame(
     private val body = world.body {
         type = BodyDef.BodyType.KinematicBody
         this.position.set(position)
+        userData = this@Flame
         box(width = size, height = size/2, position = Vector2(0f, -size/4))
         polygon(Vector2(-size/2, 0f),
             Vector2(-size*2/6, size/2),

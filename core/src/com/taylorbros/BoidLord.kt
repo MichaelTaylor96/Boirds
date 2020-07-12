@@ -26,7 +26,7 @@ class BoidLord(
         private val stageHeight: Float,
         override val scaleFactor: Float,
         var yOffsetCurrent: Float
-) : Boid, InputProcessor, Animatable, Updatable {
+) : Boid, InputProcessor, Animatable, Updatable, Mortal {
 
     private var mouseX = 0
     private var mouseY = 0
@@ -52,6 +52,7 @@ class BoidLord(
 
     private val body = world.body {
         type = BodyDef.BodyType.DynamicBody
+        userData = this@BoidLord
         position.set(initialPosition.x, initialPosition.y)
         circle(radius = size) {
             restitution = 0.2f
@@ -128,5 +129,9 @@ class BoidLord(
         val desiredOrientation = this.body.linearVelocity
         val difference = currentOrientation.angleRad(desiredOrientation)
         return torqueFactor * difference
+    }
+
+    override fun die() {
+        println("$this died")
     }
 }

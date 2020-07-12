@@ -20,6 +20,7 @@ class SeedPile(
         private val body = world.body {
             type = BodyDef.BodyType.StaticBody
             this.position.set(position)
+            userData = this@SeedPile
             circle(radius = size/6, position = Vector2(-size*2/6, -size/3))
             circle(radius = size/6, position = Vector2(0f, -size/3))
             circle(radius = size/6, position = Vector2(size*2/6, -size/3))

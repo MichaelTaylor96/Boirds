@@ -25,7 +25,7 @@ class Bird(
         override val flockingPower: Float,
         private val maxSpeed: Float,
         private val maxAcceleration: Float
-) : Animatable, Boid, Updatable {
+) : Animatable, Boid, Updatable, Mortal {
 
     override val animations: MutableMap<String, Animation<TextureRegion>> = mutableMapOf()
     override var currentAnimation = ""
@@ -51,7 +51,6 @@ class Bird(
         position.set(initialPosition.x, initialPosition.y)
         angle = initialVelocity.angleRad()
         userData = this@Bird
-
         circle(radius = size) {
             restitution = 0.2f
             density = 10f
@@ -235,4 +234,8 @@ class Bird(
 
     override val velocity: Vector2
         get() = this.body.linearVelocity
+
+    override fun die() {
+        println("$this died")
+    }
 }

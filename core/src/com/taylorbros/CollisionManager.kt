@@ -13,6 +13,8 @@ class CollisionManager : ContactListener {
         val bodyA = contact!!.fixtureA.body
         val bodyB = contact!!.fixtureB.body
         val bodies = listOf(bodyA, bodyB)
+        val entityA = bodyA.userData
+        val entityB = bodyB.userData
 
         if (bodies.any{it.userData is Bird} && bodies.any{it.userData is Wolf}) {
             val wolf = bodies.find{it.userData is Wolf}!!.userData as Wolf
