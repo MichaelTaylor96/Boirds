@@ -87,19 +87,19 @@ class CollisionManager(
                 val variableMaxSpeed = (MathUtils.random() * maxSpeed * 2 + 0.5 * maxSpeed).toFloat()
                 val variableMaxAcceleration = (MathUtils.random() * maxAcceleration * 0.9 + 0.1 * maxAcceleration).toFloat()
                 val initialImpulse = Vector2(0f, 0f)
-                val newBird = Bird(
-                        0.1f,
-                        world,
-                        position,
-                        initialImpulse,
-                        pixelsPerMeter,
-                        3f,
-                        localDistance,
-                        variableFlockingPower,
-                        variableMaxSpeed,
-                        variableMaxAcceleration
-                )
-                entitiesToCreate.add(newBird)
+//                val newBird = Bird(
+//                        0.1f,
+//                        world,
+//                        position,
+//                        initialImpulse,
+//                        pixelsPerMeter,
+//                        3f,
+//                        localDistance,
+//                        variableFlockingPower,
+//                        variableMaxSpeed,
+//                        variableMaxAcceleration
+//                )
+//                entitiesToCreate.add(newBird)
             }
             entitiesToDestroy.add(seed)
         }

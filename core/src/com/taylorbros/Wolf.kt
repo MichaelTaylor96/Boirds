@@ -27,7 +27,7 @@ class Wolf(
     var sleeping = true
     var birdsEaten = 0
     var eating = false
-    var awareness = .5f
+    var awareness = 2f
 
     init {
         var animNames = listOf("sleep", "alert", "run", "eat")
