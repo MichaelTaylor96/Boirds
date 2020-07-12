@@ -15,7 +15,7 @@ import ktx.box2d.polygon
 import kotlin.math.pow
 
 class BoidLord(
-        world: World,
+        private val world: World,
         initialPosition: Vector2, // in meters
         override val size: Float,
         density: Float,
@@ -25,8 +25,8 @@ class BoidLord(
         private val stageWidth: Float,
         private val stageHeight: Float,
         override val scaleFactor: Float,
-        var yOffsetCurrent: Float
-) : Boid, InputProcessor, Animatable, Updatable {
+        override var yOffsetCurrent: Float
+) : Boid, InputProcessor, Animatable, Updatable, Mortal, Offsettable {
 
     private var mouseX = 0
     private var mouseY = 0
@@ -52,6 +52,7 @@ class BoidLord(
 
     private val body = world.body {
         type = BodyDef.BodyType.DynamicBody
+        userData = this@BoidLord
         position.set(initialPosition.x, initialPosition.y)
         circle(radius = size) {
             restitution = 0.2f
@@ -128,5 +129,17 @@ class BoidLord(
         val desiredOrientation = this.body.linearVelocity
         val difference = currentOrientation.angleRad(desiredOrientation)
         return torqueFactor * difference
+    }
+
+    var dead = false
+
+    override fun die() {
+        if (!dead) {
+            dead = true
+            println("$this died")
+            world.destroyJoint(mousejoint)
+            world.destroyBody(this.body)
+            world.destroyBody(ground)
+        }
     }
 }
