@@ -68,7 +68,7 @@ class ForestRun : KtxScreen {
         box2dWorld.setContactListener(collisionManager)
 
         var treeY = -(stageHeight/2)
-        while(treeY < (stageHeight/2) + 2) {
+        while(treeY < (stageHeight/2) + 3) {
             val leftTree = Tree(Vector2(-(stageWidth/2), treeY), 1f, box2dWorld, pixelsPerMeter, 2.5f)
             val rightTree = Tree(Vector2(stageWidth/2, treeY), 1f, box2dWorld, pixelsPerMeter, 2.5f)
             entities.add(leftTree)
@@ -120,7 +120,7 @@ class ForestRun : KtxScreen {
     override fun render(delta: Float) {
         yOffsetCurrent += yOffsetStep
         boidLord.yOffsetCurrent = yOffsetCurrent
-        if (yOffsetCurrent % 2 == 0f) {
+        if ((yOffsetCurrent + 1) % 2 < 0.01f) {
             addSideTrees()
         }
         val pixelOffset = yOffsetCurrent * pixelsPerMeter
@@ -145,8 +145,8 @@ class ForestRun : KtxScreen {
     }
 
     fun addSideTrees() {
-        val leftTree = Tree(Vector2(-(stageWidth/2), stageHeight/2), 1f, box2dWorld, pixelsPerMeter, 2.5f)
-        val rightTree = Tree(Vector2(stageWidth/2, stageHeight/2), 1f, box2dWorld, pixelsPerMeter, 2.5f)
+        val leftTree = Tree(Vector2(-(stageWidth/2), stageHeight/2 + yOffsetCurrent + 1), 1f, box2dWorld, pixelsPerMeter, 2.5f)
+        val rightTree = Tree(Vector2(stageWidth/2, stageHeight/2 + yOffsetCurrent + 1), 1f, box2dWorld, pixelsPerMeter, 2.5f)
         entities.add(leftTree)
         entities.add(rightTree)
         stillSprites.add(leftTree)
