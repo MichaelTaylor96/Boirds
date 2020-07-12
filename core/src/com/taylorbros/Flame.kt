@@ -10,14 +10,16 @@ import com.badlogic.gdx.utils.Array
 import ktx.box2d.body
 import ktx.box2d.box
 import ktx.box2d.polygon
+import ktx.math.plus
 
 class Flame(
         position: Vector2,
         override val size: Float,
         world: World,
         override val pixelsPerMeter: Float,
-        override val scaleFactor: Float
-) : Obstacle, Animatable {
+        override val scaleFactor: Float,
+        var yOffsetStep: Float
+) : Obstacle, Animatable, Updatable {
 
     override val animations: MutableMap<String, Animation<TextureRegion>> = mutableMapOf()
     override var currentAnimation = ""
@@ -54,5 +56,9 @@ class Flame(
 
     override val position: Vector2
         get() = this.body.position
+
+    override fun update(entities: Set<Any>) {
+        this.body.setTransform(this.body.position + Vector2(0f, yOffsetStep), this.body.angle)
+    }
 
 }

@@ -50,7 +50,6 @@ class ForestRun : KtxScreen {
             yOffsetCurrent
     )
     private val wolf = Wolf(Vector2(-5f, -1f), .5f, box2dWorld, pixelsPerMeter, 2f)
-    private val flame = Flame(Vector2(1f, -5f), 1f, box2dWorld, pixelsPerMeter, 1.2f)
     private val lumberJack = LumberJack(Vector2(-1f, 5f), 1f, box2dWorld, pixelsPerMeter, 2.5f)
     private val seedPile = SeedPile(Vector2(-5f, - 5f), 1f, box2dWorld, pixelsPerMeter, 2f)
 
@@ -58,14 +57,12 @@ class ForestRun : KtxScreen {
         animatables.add(wolf)
         animatables.add(lumberJack)
         animatables.add(boidLord)
-        animatables.add(flame)
 
         stillSprites.add(seedPile)
 
         entities.add(boidLord)
         entities.add(wolf)
         entities.add(lumberJack)
-        entities.add(flame)
 
         Gdx.app.input.inputProcessor = boidLord
         box2dWorld.setContactListener(collisionManager)
@@ -103,6 +100,20 @@ class ForestRun : KtxScreen {
 
             animatables.add(newBird)
             entities.add(newBird)
+        }
+
+        val flameSize = 1f
+        val flameCount =  (stageWidth/flameSize).toInt()
+        for (i in 0..flameCount) {
+            val flame = Flame(
+                    Vector2(i * flameSize - stageWidth/2, flameSize/3 - stageHeight/2),
+                    flameSize,
+                    box2dWorld,
+                    pixelsPerMeter,
+                    1.2f,
+                    yOffsetStep)
+            animatables.add(flame)
+            entities.add(flame)
         }
     }
 
