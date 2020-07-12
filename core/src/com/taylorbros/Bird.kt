@@ -46,7 +46,7 @@ class Bird(
     }
 
     // set up box2d physics body
-    private val body = world.body {
+    val body = world.body {
         type = BodyDef.BodyType.DynamicBody
         position.set(initialPosition.x, initialPosition.y)
         angle = initialVelocity.angleRad()
@@ -70,8 +70,14 @@ class Bird(
     private val avoidFactor = 10f
     private val torqueFactor = 0.1f
     private val rotationalDragFactor = 0.05f
+    var timeStartedEating = 0f
+    var eating = false
 
     override fun update(entities: Set<Any>) {
+        if (eating) {
+            if (elapsedTime - timeStartedEating > 3) eating = false
+            else return
+        }
         desiredMovement = Vector2()
         val localBoids = localBoidsFrom(entities)
         if (localBoids.isNotEmpty()) {
@@ -83,9 +89,9 @@ class Bird(
         if (localObstacles.isNotEmpty()) {
             desiredMovement.add(obstacleAvoidanceForce(localObstacles))
         }
-        val targets = entities.filterIsInstance<Target>()
+        val targets = entities.filterIsInstance<SeedPile>()
         if (targets.isNotEmpty()) {
-//            desiredMovement.add(targetsSeekingForce(targets))
+            desiredMovement.add(targetsSeekingForce(targets))
         }
         if (desiredMovement.len() > maxAcceleration) {
             desiredMovement.setLength(maxAcceleration)
@@ -211,6 +217,16 @@ class Bird(
             }
         }
         return avoidForce
+    }
+
+    private fun targetsSeekingForce(targets: List<SeedPile>): Vector2 {
+        val seekingForce = Vector2()
+        targets.forEach {
+            val seekVector = it.position.cpy().sub(this.position)
+            seekVector.setLength(4/seekVector.len())
+            seekingForce.add(seekVector)
+        }
+        return seekingForce
     }
 
     private fun setAnimationDirection() {
