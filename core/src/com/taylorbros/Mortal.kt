@@ -1,5 +1,4 @@
 package com.taylorbros
 
-interface Mortal {
-    fun die()
+interface Mortal : Destroyable {
 }
