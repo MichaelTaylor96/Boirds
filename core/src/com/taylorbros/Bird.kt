@@ -50,6 +50,8 @@ class Bird(
         type = BodyDef.BodyType.DynamicBody
         position.set(initialPosition.x, initialPosition.y)
         angle = initialVelocity.angleRad()
+        userData = this@Bird
+
         circle(radius = size) {
             restitution = 0.2f
             density = 10f
@@ -91,7 +93,6 @@ class Bird(
         body.applyForceToCenter(desiredMovement, true)
         drag = dragForce()
         body.applyForceToCenter(drag, true)
-        val angularVelocity = body.angularVelocity
         val torque = rotateIntoVelocity()
         body.applyTorque(torque, true)
         val rotationalDrag = rotationalDrag()
