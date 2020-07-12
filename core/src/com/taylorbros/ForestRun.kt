@@ -13,6 +13,8 @@ import ktx.graphics.use
 
 class ForestRun : KtxScreen {
 
+    private var yOffsetStep = 0.01f
+    private var yOffsetCurrent = 0f
     private val box2dWorld = createWorld()
     private val collisionManager = CollisionManager()
     private val batch = SpriteBatch()
@@ -44,7 +46,8 @@ class ForestRun : KtxScreen {
             pixelsPerMeter,
             stageWidth,
             stageHeight,
-            3f
+            3f,
+            yOffsetCurrent
     )
     private val tree = Tree(Vector2(5f, 1f), 1f, box2dWorld, pixelsPerMeter, 2.5f)
     private val wolf = Wolf(Vector2(-5f, -1f), .5f, box2dWorld, pixelsPerMeter, 2f)
@@ -96,20 +99,25 @@ class ForestRun : KtxScreen {
     }
 
     override fun render(delta: Float) {
+        yOffsetCurrent += yOffsetStep
+        boidLord.yOffsetCurrent = yOffsetCurrent
+        camera.translate(0f, yOffsetStep)
+        camera.update()
         box2dWorld.step(timeStep, velocityIterations, positionIterations)
         entities.forEach { if (it is Updatable) it.update(entities) }
 
         batch.use {
             Gdx.gl.glClearColor(1f, 1f,1f, 1f)
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
-            for (animatable in animatables) {
-                animatable.elapsedTime += delta
-                val img = animatable.getKeyFrame()
-                batch.draw(img, animatable.pixelX, animatable.pixelY, animatable.pixelWidth, animatable.pixelHeight)
-            }
-            for (sprite in stillSprites) {
-                batch.draw(sprite.sprite, sprite.pixelX, sprite.pixelY, sprite.pixelWidth, sprite.pixelHeight)
-            }
+// TODO move sprites by offset
+//            for (animatable in animatables) {
+//                animatable.elapsedTime += delta
+//                val img = animatable.getKeyFrame()
+//                batch.draw(img, animatable.pixelX, animatable.pixelY, animatable.pixelWidth, animatable.pixelHeight)
+//            }
+//            for (sprite in stillSprites) {
+//                batch.draw(sprite.sprite, sprite.pixelX, sprite.pixelY, sprite.pixelWidth, sprite.pixelHeight)
+//            }
         }
         debugRenderer.render(box2dWorld, camera.combined)
     }
