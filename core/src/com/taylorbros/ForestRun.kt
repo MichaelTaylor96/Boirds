@@ -58,12 +58,6 @@ class ForestRun : KtxScreen {
         entities.add(
                 boidLord
         )
-//        entities.add(
-//                LumberJack(Vector2(-1f, 5f), 1f, box2dWorld, pixelsPerMeter, 2.5f)
-//        )
-//        entities.add(
-//                SeedPile(Vector2(-5f, 7f), 1f, box2dWorld, pixelsPerMeter, 2f)
-//        )
 
         Gdx.app.input.inputProcessor = boidLord
         box2dWorld.setContactListener(collisionManager)
@@ -149,7 +143,7 @@ class ForestRun : KtxScreen {
     }
 
     private fun conditionallyAddEntities() {
-        val targetWolves = yOffsetCurrent/4.toInt()
+        val targetWolves = min((yOffsetCurrent/10).toInt(), 5)
         if (entities.count { it is Wolf } < targetWolves) {
             entities.add(
                     Wolf(
@@ -159,7 +153,7 @@ class ForestRun : KtxScreen {
                             pixelsPerMeter,
                             2f))
         }
-        val targetTrees = min((yOffsetCurrent).toInt() + 20, 50)
+        val targetTrees = min((yOffsetCurrent).toInt() + 20, 30)
         if (entities.count { it is Tree } < targetTrees) {
             entities.add(
                     Tree(
@@ -178,6 +172,16 @@ class ForestRun : KtxScreen {
                             box2dWorld,
                             pixelsPerMeter,
                             2f))
+        }
+        val targetLumberJacks = min((yOffsetCurrent/10).toInt(), 5)
+        if (entities.count { it is LumberJack } < targetLumberJacks) {
+            entities.add(
+                    LumberJack(
+                            Vector2((Math.random()).toFloat()* stageWidth - stageWidth/2, stageHeight*2/3 + yOffsetCurrent),
+                            1f,
+                            box2dWorld,
+                            pixelsPerMeter,
+                            2.5f))
         }
     }
     private fun removeEntitiesBelowFloor() {
