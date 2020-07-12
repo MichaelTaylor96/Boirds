@@ -14,6 +14,7 @@ import ktx.graphics.use
 class ForestRun : KtxScreen {
 
     private val box2dWorld = createWorld()
+    private val collisionManager = CollisionManager()
     private val batch = SpriteBatch()
     private val pixelsPerMeter = 50f
     private var stageWidth = Gdx.graphics.width / pixelsPerMeter
@@ -24,7 +25,7 @@ class ForestRun : KtxScreen {
     var velocityIterations = 8
     var positionIterations = 3
 
-    private val boidCount = 200
+    private val boidCount = 50
     private val maxSpeed = 10f
     private val maxAcceleration = 10f
     private val localDistance = 1.5f
@@ -47,7 +48,7 @@ class ForestRun : KtxScreen {
             3f
     )
     val tree = Tree(Vector2(5f, 1f), 1f, box2dWorld, pixelsPerMeter, 2.5f)
-    val wolf = Wolf(Vector2(-5f, -1f), 1f, box2dWorld, pixelsPerMeter, 2f)
+    val wolf = Wolf(Vector2(-5f, -1f), .5f, box2dWorld, pixelsPerMeter, 2f)
     val flame = Flame(Vector2(1f, -5f), 1f, box2dWorld, pixelsPerMeter, 1.2f)
     val lumberJack = LumberJack(Vector2(-1f, 5f), 1f, box2dWorld, pixelsPerMeter, 2.5f)
     val seedPile = SeedPile(Vector2(-5f, - 5f), 1f, box2dWorld, pixelsPerMeter, 2f)
@@ -62,17 +63,17 @@ class ForestRun : KtxScreen {
         stillSprites.add(tree)
 
         entities.add(boidLord)
+        entities.add(wolf)
         entities.add(tree)
         entities.add(lumberJack)
         entities.add(flame)
 
         Gdx.app.input.inputProcessor = boidLord
+        box2dWorld.setContactListener(collisionManager)
 
         repeat(boidCount) {
-            val position = Vector2(
-                    MathUtils.random() * stageWidth - stageWidth/2,
-                    MathUtils.random() * stageHeight - stageHeight/2
-            )
+            val randomOffset = Vector2(((Math.random() * 5) - 2.5).toFloat(), ((Math.random() * 5) - 2.5).toFloat())
+            val position = Vector2(0f, 0f).add(randomOffset)
             val variableFlockingPower = (MathUtils.random() * flockingPower * 2 + 0.5 * flockingPower).toFloat()
             val variableMaxSpeed = (MathUtils.random() * maxSpeed * 2 + 0.5 * maxSpeed).toFloat()
             val variableMaxAcceleration = (MathUtils.random() * maxAcceleration * 0.9 + 0.1 * maxAcceleration).toFloat()
@@ -104,9 +105,6 @@ class ForestRun : KtxScreen {
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
             for (animatable in animatables) {
                 animatable.elapsedTime += delta
-                if (Math.random() > 0.99) {
-                    animatable.currentAnimation = animatable.animations.keys.toList().shuffled()[0]
-                }
                 val img = animatable.getKeyFrame()
                 batch.draw(img, animatable.pixelX, animatable.pixelY, animatable.pixelWidth, animatable.pixelHeight)
             }
