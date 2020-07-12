@@ -101,6 +101,7 @@ class ForestRun : KtxScreen {
     override fun render(delta: Float) {
         yOffsetCurrent += yOffsetStep
         boidLord.yOffsetCurrent = yOffsetCurrent
+        val pixelOffset = yOffsetCurrent * pixelsPerMeter
         camera.translate(0f, yOffsetStep)
         camera.update()
         box2dWorld.step(timeStep, velocityIterations, positionIterations)
@@ -110,14 +111,14 @@ class ForestRun : KtxScreen {
             Gdx.gl.glClearColor(1f, 1f,1f, 1f)
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 // TODO move sprites by offset
-//            for (animatable in animatables) {
-//                animatable.elapsedTime += delta
-//                val img = animatable.getKeyFrame()
-//                batch.draw(img, animatable.pixelX, animatable.pixelY, animatable.pixelWidth, animatable.pixelHeight)
-//            }
-//            for (sprite in stillSprites) {
-//                batch.draw(sprite.sprite, sprite.pixelX, sprite.pixelY, sprite.pixelWidth, sprite.pixelHeight)
-//            }
+            for (animatable in animatables) {
+                animatable.elapsedTime += delta
+                val img = animatable.getKeyFrame()
+                batch.draw(img, animatable.pixelX, animatable.pixelY - pixelOffset, animatable.pixelWidth, animatable.pixelHeight)
+            }
+            for (sprite in stillSprites) {
+                batch.draw(sprite.sprite, sprite.pixelX, sprite.pixelY - pixelOffset, sprite.pixelWidth, sprite.pixelHeight)
+            }
         }
         debugRenderer.render(box2dWorld, camera.combined)
     }
